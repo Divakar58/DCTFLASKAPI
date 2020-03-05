@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+flaskapp/*
+/flaskapp/*
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -55,6 +58,12 @@ BenchmarkDotNet.Artifacts/
 project.lock.json
 project.fragment.lock.json
 artifacts/
+flaskapp/
+flaskapp/include
+flaskapp/Lib
+flaskapp/Scripts
+flaskapp/tcl
+
 
 # StyleCop
 StyleCopReport.xml
@@ -88,6 +97,7 @@ StyleCopReport.xml
 *.svclog
 *.scc
 *.env
+flaskapp/
 
 # Chutzpah Test files
 _Chutzpah*
@@ -114,6 +124,7 @@ ipch/
 
 # TFS 2012 Local Workspace
 $tf/
+$flaskapp/
 
 # Guidance Automation Toolkit
 *.gpState
@@ -167,6 +178,7 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
+flaskapp/
 
 # Publish Web Output
 *.[Pp]ublish.xml
@@ -175,6 +187,7 @@ publish/
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
+
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
@@ -302,6 +315,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+__flaskapp__/
+__.vscode__/
 
 # Cake - Uncomment if you are using it
 # tools/**
