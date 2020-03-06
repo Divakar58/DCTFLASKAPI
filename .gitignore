@@ -96,7 +96,7 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
-*.env
+#*.env
 flaskapp/
 
 # Chutzpah Test files
