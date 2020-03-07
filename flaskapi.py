@@ -67,7 +67,6 @@ if __name__ == "__main__":
     if(DEBUG):
         print("app running at port",PORT,"debug mode",DEBUG)
         app.run(port=PORT,debug=DEBUG)
-        
     else:
         print("app running at port",PORT,"debug mode",DEBUG)
-        app.run(port=PORT)
+        app.run()
