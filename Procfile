@@ -1,1 +1,1 @@
-web: gunicorn flaskapi:app --timeout 30
+web: gunicorn flaskapi:app

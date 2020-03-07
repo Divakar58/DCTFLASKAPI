@@ -12,6 +12,8 @@
 
 flaskapp/*
 /flaskapp/*
+/.vscode/*
+.vscode/*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -63,7 +65,7 @@ flaskapp/include
 flaskapp/Lib
 flaskapp/Scripts
 flaskapp/tcl
-
+.vscode/
 
 # StyleCop
 StyleCopReport.xml
@@ -98,6 +100,7 @@ StyleCopReport.xml
 *.scc
 #*.env
 flaskapp/
+.vscode/
 
 # Chutzpah Test files
 _Chutzpah*
@@ -125,6 +128,7 @@ ipch/
 # TFS 2012 Local Workspace
 $tf/
 $flaskapp/
+$.vscode/
 
 # Guidance Automation Toolkit
 *.gpState
@@ -179,6 +183,7 @@ DocProject/Help/html
 # Click-Once directory
 publish/
 flaskapp/
+.vscode/
 
 # Publish Web Output
 *.[Pp]ublish.xml
@@ -289,7 +294,7 @@ node_modules/
 
 # Visual Studio 6 auto-generated workspace file (contains which files were open etc.)
 *.vbw
-
+*.vscode/
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
@@ -316,7 +321,7 @@ paket-files/
 __pycache__/
 *.pyc
 # __flaskapp__/
-# __.vscode__/
+.vscode/
 
 # Cake - Uncomment if you are using it
 # tools/**
