@@ -1,4 +1,7 @@
 unixodbc
 unixodbc-dev
+libmyodbc
+tdsodbc
+unixodbc-bin
 python-pyodbc
 libsqliteodbc
