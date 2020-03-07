@@ -28,6 +28,9 @@ connection_string=os.environ.get("CONNECTION_STRING")
 
 query="select top 3 * from [dbo].[tbl_Employee]"
 
+@app.route('/',methods=['POST','GET'])
+def data():
+    return {"message":"sucesss"},200
 
 @app.route('/data',methods=['POST','GET'])
 def data():
