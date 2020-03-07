@@ -29,13 +29,13 @@ connection_string=os.environ.get("CONNECTION_STRING")
 query="select top 3 * from [dbo].[tbl_Employee]"
 
 @app.route('/',methods=['POST','GET'])
-def data():
+def home():
     return {"message":"sucesss"},200
 
 @app.route('/data',methods=['POST','GET'])
 def data():
     print("In Data API")
-    df=pd.read_sql(query,pyodbc.connect(connection_string))
+    #df=pd.read_sql(query,pyodbc.connect(connection_string))
     return {"message":"sucesss"},200
 
 @app.route('/visualize',methods=['POST','GET'])
