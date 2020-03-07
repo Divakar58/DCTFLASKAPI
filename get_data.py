@@ -17,11 +17,11 @@ query=os.environ.get("TKTS_QUERY")
 #print(connection_string)
 
 def pull_data():
-    #connection=pyodbc.connect(connection_string)
-    #df=pd.read_sql(query,connection)
-    #connection.close()
+    connection=pyodbc.connect(connection_string)
+    df=pd.read_sql(query,connection)
+    connection.close()
     
-    df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     return df
 
 dataframe=pull_data()
