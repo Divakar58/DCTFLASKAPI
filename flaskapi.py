@@ -22,6 +22,9 @@ CORS(app)
 
 DEBUG=eval(os.environ.get("DEBUG"))
 
+PRODUCTION=eval(os.environ.get("PRODUCTION"))
+
+
 PORT = int(os.environ.get("PORT"))
 
 connection_string=os.environ.get("CONNECTION_STRING")
@@ -64,9 +67,9 @@ def runmodel():
     
 
 if __name__ == "__main__":
-    if(DEBUG):
-        print("app running at port",PORT,"debug mode",DEBUG)
-        app.run(port=PORT,debug=DEBUG)
-    else:
-        print("app running at port",PORT,"debug mode",DEBUG)
+    if(PRODUCTION):
         app.run()
+        
+    else:
+       print("app running at port",PORT,"debug mode",DEBUG)
+       app.run(port=PORT,debug=DEBUG)
