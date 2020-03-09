@@ -2,5 +2,6 @@ unixodbc
 unixodbc-bin
 unixodbc-dev
 tdsodbc
+odbcinst -i -d -f /usr/share/tdsodbc/odbcinst.ini
 python-pyodbc
 libsqliteodbc
