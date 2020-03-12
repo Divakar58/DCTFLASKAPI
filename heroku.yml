@@ -1,0 +1,2 @@
+ln -s /usr/local/etc/odbcinst.ini /etc/odbcinst.ini
+ln -s /usr/local/etc/odbc.ini /etc/odbc.ini
