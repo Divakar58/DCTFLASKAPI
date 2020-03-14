@@ -10,7 +10,7 @@ load_dotenv()
 
 drivers= [driver for driver in pyodbc.drivers()]
 print(drivers)
-connection_string="DRIVER={"+drivers[1]+"};SERVER=tcp:dct2020.database.windows.net,1433;DATABASE=ACRF;UID=dct;PWD=Duck@123;Encrypt=yes;TrustServerCertificate=no;"
+connection_string="DRIVER={"+drivers[0]+"};SERVER=tcp:dct2020.database.windows.net,1433;DATABASE=ACRF;UID=dct;PWD=Duck@123;Encrypt=yes;TrustServerCertificate=no;"
 
 #connection_string=os.environ.get("CONNECTION_STRING")
 query=os.environ.get("TKTS_QUERY")
