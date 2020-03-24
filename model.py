@@ -51,6 +51,7 @@ def get_current_developer():
 
 def current_developer(dataframe,current_developers):
     return dataframe[dataframe['Developer'].isin(current_developers)]
+    #return dataframe.head(500)
 
 def modelling(dataframe):
     print("modelling")
@@ -87,17 +88,21 @@ def evaluation():
 
 
 def run_model(dataframe):
-    dataframe=missing_values_treatment(dataframe)
+    try:
+        dataframe=missing_values_treatment(dataframe)
+    except e:
+        return {"message":e.message} 
     current_dataframe=current_developer(dataframe,current_developers)
     model=modelling(current_dataframe)
     print("Model Generated as pickle file")
     pickle.dump(model,open('model.pkl', 'wb'))
     #return model
-    return {"Message": "Model ran successfull"},200
+    return {"message": "Model ran successfull"},200
 
 def text_process(title):
-    print("Text Processing")
+    #print("Text Processing")
     title=title.lower()
+    title=re.sub(r'[-()\"#/@;:<>{}`+=~|.!?,]',r'',title)
     title=''.join([char for char in title if char not in string.punctuation])
     clean_title=[word for word in title.split() if word not in stopwords.words('english')]
     wordnet_lem=WordNetLemmatizer()
@@ -107,8 +112,8 @@ def text_process(title):
 def vectorization(Xtrain,Xtest,feature):
     cv=CountVectorizer(analyzer=text_process)
     cv1=cv.fit(Xtrain[feature])
-    X_temp=pd.DataFrame(cv1.transform(Xtrain[feature]).todense(),columns=cv1.get_feature_names()) 
-    X_test1=pd.DataFrame(cv1.transform(Xtest[feature]).todense(),columns=cv1.get_feature_names())
+    X_temp=pd.DataFrame(cv1.transform(Xtrain[feature].values.astype('U')).todense(),columns=cv1.get_feature_names()) 
+    X_test1=pd.DataFrame(cv1.transform(Xtest[feature].values.astype('U')).todense(),columns=cv1.get_feature_names())
     return (X_temp,X_test1)
 
 def recommended_developer(lis):  
@@ -122,27 +127,27 @@ def latest_defect():
     query="select * from TFSDATA where "
 
 
-def model_building(dataframe):
-    X=dataframe[['Title','Module']]
-    y=dataframe['Developer']
-    X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
-    X_temp1,X_test1=vectorization(X_train,X_test,'Title')
-    X_temp2,X_test2=vectorization(X_train,X_test,'Module') 
-    X_train_sm=pd.concat([X_temp1,X_temp2],axis=1)
-    X_test_sm=pd.concat([X_test1,X_test2],axis=1)  
-    model=MultinomialNB().fit(X_train_sm,y_train)   
-    # final_df=pd.DataFrame(100*(model.predict_proba(X_test_sm).round(4)),columns=model.classes_,index=X_test_sm.index)
-    # df_f=final_df.reset_index()
-    # final_df['Recommended Developer']=final_df.apply(recommended_developer,axis=1)
-    # bestpipeline=Pipeline([('tokenization',CountVectorizer(analyzer=text_process)),
-    # ('tfidf',TfidfTransformer()),
-    # ('clf',SVC(kernel='rbf',probability=True))],verbose=True)#n_estimators=100,max_depth=5,min_samples_split=10,min_samples_leaf=10,criterion='gini'
-    # bestpipeline.fit(X_train,y_train)
-    # pickle_file=open('TFSmodel.pickel','wb')
-    # print(bestpipeline.predict('Coverage Match'))
-    # pickle.dump(bestpipeline,pickle_file)
-    # return bestpipeline
-    return model
+# def model_building(dataframe):
+#     X=dataframe[['Title','Module']]
+#     y=dataframe['Developer']
+#     X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
+#     X_temp1,X_test1=vectorization(X_train,X_test,'Title')
+#     X_temp2,X_test2=vectorization(X_train,X_test,'Module') 
+#     X_train_sm=pd.concat([X_temp1,X_temp2],axis=1)
+#     X_test_sm=pd.concat([X_test1,X_test2],axis=1)  
+#     model=MultinomialNB().fit(X_train_sm,y_train)   
+#     # final_df=pd.DataFrame(100*(model.predict_proba(X_test_sm).round(4)),columns=model.classes_,index=X_test_sm.index)
+#     # df_f=final_df.reset_index()
+#     # final_df['Recommended Developer']=final_df.apply(recommended_developer,axis=1)
+#     # bestpipeline=Pipeline([('tokenization',CountVectorizer(analyzer=text_process)),
+#     # ('tfidf',TfidfTransformer()),
+#     # ('clf',SVC(kernel='rbf',probability=True))],verbose=True)#n_estimators=100,max_depth=5,min_samples_split=10,min_samples_leaf=10,criterion='gini'
+#     # bestpipeline.fit(X_train,y_train)
+#     # pickle_file=open('TFSmodel.pickel','wb')
+#     # print(bestpipeline.predict('Coverage Match'))
+#     # pickle.dump(bestpipeline,pickle_file)
+#     # return bestpipeline
+#     return model
 
 if __name__ == "__main__":
     run_model(dataframe)
