@@ -19,6 +19,8 @@ connection_string=os.environ.get("CONNECTION_STRING")
 connection_string_local=os.environ.get("CONNECTION_STRING_LOCAL")
 query=os.environ.get("TKTS_QUERY")
 latestquery=os.environ.get("LATEST_TICKETS")
+currentdevelopers=os.environ.get("CURRENT_DEVELOPERS")
+
 
 def test(a):
     lis=[]
@@ -68,8 +70,11 @@ def update_developer(Id,developer):
     #     raise Exception("Update failed")
     cursor.close()
     return "updated sucessfully"
-
-
+def get_current_developers():
+    connection=pyodbc.connect(connection_string_local)
+    df=pd.read_sql(currentdevelopers,connection)
+    connection.close()
+    return df
 
 def format_response(final_df,type='recommended'):
     if(type=='recommended'):

@@ -23,14 +23,14 @@ from sklearn.naive_bayes import MultinomialNB
 import re
 import pickle
 #from prediction import modelling
-from get_data import dataframe
+from get_data import dataframe,get_current_developers
 
 
 # list_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
 #                             'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
 current_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
                             'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
-
+#current_developers=get_current_developers()
 Num_developer=3
 
 
@@ -52,6 +52,36 @@ def get_current_developer():
 def current_developer(dataframe,current_developers):
     return dataframe[dataframe['Developer'].isin(current_developers)]
     #return dataframe.head(500)
+
+def seggregation(a):
+    x,y=a
+    if 'policy' in y.lower():
+        if 'transact' in x.lower():
+            return 'TransACT'
+        elif 'applicant' in x.lower():
+            return 'Account'
+        elif 'skins' in x.lower() or 'align' in x.lower() or 'javascript' in x.lower() or 'ajax' in x.lower():
+            return 'Skins'
+        elif 'premium' in x.lower() or 'pric' in x.lower():
+            return 'Rating'
+        elif 'privilege' in x.lower() or 'useradmin' in x.lower():
+            return 'UserAdmin'
+        elif 'risk' in x.lower():
+            return 'Risk'
+        elif 'form' in x.lower() or 'doc' in x.lower():
+            return 'Forms'
+        else:
+            return 'Others'
+    elif 'billing' in y.lower():
+        if 'invoice' in x.lower():
+            return 'Invoice'
+        elif 'disbursement' in x.lower():
+            return 'Disbursement'
+        elif 'payment' in x.lower():
+            return 'Payment'
+        return 'Billing'
+    elif 'claims' in y.lower():
+        return 'Claims'
 
 def modelling(dataframe):
     print("modelling")
@@ -125,7 +155,6 @@ def recommended_developer(lis):
 def latest_defect():
     connection_string="Driver={SQL Server};"+"Server=(local);"+"Database=TFS;"+"username=DCTSqlUser;"+"password=orange#5;"+"Trusted_connect=yes;"
     query="select * from TFSDATA where "
-
 
 # def model_building(dataframe):
 #     X=dataframe[['Title','Module']]

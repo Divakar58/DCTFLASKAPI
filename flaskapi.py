@@ -10,12 +10,30 @@ from flask_cors import CORS
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from model import run_model,missing_values_treatment
+from model import run_model,missing_values_treatment,seggregation
 import json
 
 
 load_dotenv()
 
+df=pd.DataFrame({'a':[1,2,3,4,5],'b':[9,8,7,6,5],'c':[6,4,5,6,7]})
+
+# message=Mail(
+#     from_email='divakarkareddy@gmail.com',
+#     to_emails='dinu818690@gmail.com',
+#     subject='Recommendations Mail',
+#     html_content=sendmail(df),
+# )
+
+# sendgrid=SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+
+# res=sendgrid.send(message)
+
+# print(res.status_code,res.headers)
+# if res.status_code=='200':
+#     print("Mail send")
+
+load_dotenv()
 
 app=Flask(__name__)
 CORS(app)
@@ -32,23 +50,43 @@ PORT = int(os.environ.get("PORT"))
 
 query="select top 3 * from [dbo].[tbl_Employee]"
 
+
+###########################  ----- Home ----#####################
 @app.route('/',methods=['POST','GET'])
 def home():
     return {"message":"sucesss"},200
 
+###########################  ----- data ----#####################
 @app.route('/data',methods=['POST','GET'])
 def data():
     print("In Data API")
     #df=pd.read_sql(query,pyodbc.connect(connection_string))
     return {"message":"sucesss"},200
 
+###########################  ----- Visualize ----#####################
 @app.route('/visualize',methods=['POST','GET'])
 def visualize():
-    dis={}
-    dis['labels']=list(dataframe['Developer'][dataframe['Developer'].isin(current_developers)].value_counts().index.values)
-    dis['values']=list(map(int,dataframe['Developer'][dataframe['Developer'].isin(current_developers)].value_counts().values))
-    return {"labels":dis['labels'],"values":dis['values']},200 #pd.DataFrame(dis).to_json(),200
+    dataframe['Seggregation']=dataframe[['Title','Module']].apply(seggregation,axis=1)
+    line={}
+    line['labels']=list(dataframe['Developer'][dataframe['Developer'].isin(current_developers)].value_counts().index.values)
+    line['values']=list(map(int,dataframe['Developer'][dataframe['Developer'].isin(current_developers)].value_counts().values))
+    bar={}
+    bar['labels']=list(dataframe['Seggregation'].value_counts().index)
+    bar['values']=list(map(int,dataframe['Seggregation'].value_counts().values))
+    pie={}
+    pie['labels']=list(dataframe['Severity'].value_counts().index)
+    pie['values']=list(map(int,dataframe['Severity'].value_counts().values))
+    defectsdata={}
+    df=dataframe
+    defectsdata['labels']=list(df['Module'].value_counts().index)
+    defectsdata['values']=list(map(int,df['Module'].value_counts().values))
+    print(defectsdata)
+    return {"line_data":{"labels":line['labels'],"values":line['values']},
+    "bar_data":{"labels":bar['labels'],"values":bar['values']},
+    "pie_data":{"labels":pie['labels'],"values":pie['values']},
+    "defects_data":{"labels":defectsdata['labels'],"values":defectsdata['values']}},200 #pd.DataFrame(dis).to_json(),200
 
+###########################  ----- Predict ----#####################
 @app.route('/predict',methods=['POST','GET'])
 def predict():
     #print("ticketdata:",ticketdata)
@@ -92,12 +130,10 @@ def predict():
     #return json.dumps({"results":list(res),"pagesize":ticketscount}),200
     #print({"results":{"Developers":list(res['Developers'].values),"Recommended":list(res['Recommended'].values),"Title":list(res['Title'].values),"ID":list(res['ID'].values)},"pagesize":int(ticketscount.iloc[0])})
     #return {"results":{"Developers":list(res['Developers'].values),"Recommended":list(res['Recommended'].values),"Title":list(res['Title'].values),"ID":list(res['ID'].values)},"pagesize":int(ticketscount.iloc[0])},200
-
     return {"results":list(res),"pagesize":int(ticketscount.iloc[0])}
     #return Response(result,mimetype='application/json')
 
-
-
+###########################  ----- View ----#####################
 @app.route('/view',methods=['POST','GET'])
 def view():
     ticketdata=latest_defect()
@@ -110,7 +146,7 @@ def view():
     
     return {"results":result},200 if result=="sucess" else 500 
 
-
+###########################  ----- Update ----#####################
 @app.route('/update',methods=['POST','GET'])
 def update():
     Id=request.args.get('Id',type=int)
@@ -120,7 +156,7 @@ def update():
     print("After update")
     return json.dumps({"results":result}),200
 
-
+###########################  ----- Predicts ----#####################
 @app.route('/predicts',methods=['POST','GET'])
 def predicts():
     print("Before Prediction")
@@ -138,7 +174,7 @@ def predicts():
     #return {"results":result,"pagesize":pagesize}
     #return Response(result,mimetype='application/json')
 
-
+###########################  ----- Recommended Developer ----#####################
 @app.route('/recommendedDeveloper',methods=['POST','GET'])
 def recommendedDeveloper():
     Id=request.args.get('Id',default='',type=int)
@@ -147,6 +183,7 @@ def recommendedDeveloper():
         #result=prediction(ticket)
         #print(result)
         return json.dumps({"results":list(result)}),200
+
 
 @app.route('/runmodel',methods=['POST','GET'])
 def runmodel():
@@ -160,13 +197,31 @@ def runmodel():
         #print("")
         return {"model":"Ran successfully"},200
     #return Response({"model":"Ran successfully"},200,mimetype='application/json')
-    
-    
+
+# @app.route('/sendmail')
+# def sendmail():
+#     sendgrid=SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+#     df=pd.DataFrame({'a':[1,2,3,4,5],'b':[9,8,7,6,5],'c':[6,4,5,6,7]})
+#     message=Mail(
+#     from_email='divakarkareddy@gmail.com',
+#     to_emails='divakar.kareddy@duckcreek.com',
+#     subject='Recommendations Mail',
+#     html_content=render('email.html',column_names=df.columns.values,row_data=list(df.values.tolist())
+#     )
+#     res=sendgrid.send(message)
+
+#     print(res.status_code)
+#     return render_template('email.html',column_names=df.columns.values,row_data=list(df.values.tolist()))
+
+@app.route('/defectvisualize',methods=['GET','POST'])
+def defectvisualize(dataframe):
+    dataframe['Title']
+
+
 
 if __name__ == "__main__":
     if(PRODUCTION):
-        app.run()
-        
+        app.run()   
     else:
        print("app running at port",PORT,"debug mode",DEBUG)
        app.run(port=PORT,debug=DEBUG)
