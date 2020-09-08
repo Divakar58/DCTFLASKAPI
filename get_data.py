@@ -22,6 +22,7 @@ latestquery=os.environ.get("LATEST_TICKETS")
 currentdevelopers=os.environ.get("CURRENT_DEVELOPERS")
 
 
+
 def test(a):
     lis=[]
     for i in a:
@@ -37,15 +38,38 @@ def store_data(df):
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
     df.drop_duplicates(inplace=True)
     df.sort_values(by='ID',inplace=True)
-    df.to_sql('RecommendationsData', schema='dbo', con = engine, if_exists='append')
+    df.to_sql('TicketsData', schema='dbo', con = engine, if_exists='append')
 
 
 def pull_data():
     connection=pyodbc.connect(connection_string_local)
     df=pd.read_sql(query,connection)
     connection.close()
-    
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return df
+
+def pull_data_bydate(startDate,endDate):
+    connection=pyodbc.connect(connection_string_local)
+    querydate=os.environ.get("TKTS_QUERY_BYDATE")
+    #print(querydate)
+    print("startDate=",startDate,"endDate=",endDate)
+    if(startDate!=''):
+        if(endDate!=''):
+            querydate=querydate+" where [Created Date]> '"+ startDate+ "' and [Created Date]<'"+endDate+"'"
+            print(querydate)
+        else:
+            querydate=querydate+" where [Created Date]> '"+ startDate +"'"
+            print(querydate)
+    else:
+        querydate=querydate
+    print(querydate)
+    df=pd.read_sql(querydate,connection)
+    connection.close()
+    print(df.head())
+    df['Created Date']=pd.to_datetime(df['Created Date'],dayfirst=True)#.dt.date
+    # df['createdDate2']=df['Created Date'].dt.strftime('%Y-%m')
+    # df.sort_values('createdDate2',ascending=False,inplace=True)
+    #print(df)
     return df
 
 def get_ticket_byId(id):
@@ -69,7 +93,7 @@ def update_developer(Id,developer):
     # except Exception as e:
     #     raise Exception("Update failed")
     cursor.close()
-    return "updated sucessfully"
+    return "Updated Successfully!"
 def get_current_developers():
     connection=pyodbc.connect(connection_string_local)
     df=pd.read_sql(currentdevelopers,connection)

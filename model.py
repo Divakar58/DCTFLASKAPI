@@ -64,14 +64,18 @@ def seggregation(a):
             return 'Skins'
         elif 'premium' in x.lower() or 'pric' in x.lower():
             return 'Rating'
-        elif 'privilege' in x.lower() or 'useradmin' in x.lower():
+        elif 'privilege' in x.lower() or 'useradmin' in x.lower() or 'roles' in x.lower() or 'entity' in x.lower():
             return 'UserAdmin'
         elif 'risk' in x.lower():
             return 'Risk'
         elif 'form' in x.lower() or 'doc' in x.lower():
             return 'Forms'
+        elif 'search' in x.lower():
+            return 'Search'
+        elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
+            return 'Party'
         else:
-            return 'Others'
+            return 'PolicyOther'
     elif 'billing' in y.lower():
         if 'invoice' in x.lower():
             return 'Invoice'
@@ -79,9 +83,18 @@ def seggregation(a):
             return 'Disbursement'
         elif 'payment' in x.lower():
             return 'Payment'
-        return 'Billing'
+        elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
+            return 'Party'
+        return 'BillingOther'
+        
     elif 'claims' in y.lower():
-        return 'Claims'
+        if 'party' in x.lower() or 'ofac' in x.lower() or 'geo' in x.lower():
+            return 'Party'
+        elif 'coverage' in x.lower():
+            return 'CoverageMatch'
+        elif 'attach' in x.lower():
+            return 'AttachPolicy' 
+        return 'ClaimsOther'
 
 def modelling(dataframe):
     print("modelling")
