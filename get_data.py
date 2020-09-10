@@ -15,6 +15,7 @@ drivers= [driver for driver in pyodbc.drivers()]
 # print(drivers)
 #connection_string="DRIVER={"+drivers[0]+"};SERVER=tcp:duckdb.database.windows.net,1433;DATABASE=ACRF;UID=dct;PWD=Duck@123;Encrypt=yes;TrustServerCertificate=no;"
 
+production=os.environ.get("PRODUCTION")
 connection_string=os.environ.get("CONNECTION_STRING")
 connection_string_local=os.environ.get("CONNECTION_STRING_LOCAL")
 query=os.environ.get("TKTS_QUERY")
@@ -34,7 +35,10 @@ def test(a):
 
 #print(connection_string)
 def store_data(df):
-    quoted = urllib.parse.quote_plus(connection_string_local)
+    if(production):
+        quoted = urllib.parse.quote_plus(connection_string)
+    else:
+        quoted = urllib.parse.quote_plus(connection_string_local)
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
     df.drop_duplicates(inplace=True)
     df.sort_values(by='ID',inplace=True)
@@ -42,14 +46,20 @@ def store_data(df):
 
 
 def pull_data():
-    connection=pyodbc.connect(connection_string_local)
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
     df=pd.read_sql(query,connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     return df
 
 def pull_data_bydate(startDate,endDate):
-    connection=pyodbc.connect(connection_string_local)
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
     querydate=os.environ.get("TKTS_QUERY_BYDATE")
     #print(querydate)
     print("startDate=",startDate,"endDate=",endDate)
@@ -73,7 +83,10 @@ def pull_data_bydate(startDate,endDate):
     return df
 
 def get_ticket_byId(id):
-    connection=pyodbc.connect(connection_string_local)
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
     #df=pd.read_sql(latestquery+"where Id="+str(id),connection)
     df=pd.read_sql("SELECT * from RecommendationsData where Id="+str(id),connection)
     connection.close()
@@ -81,7 +94,10 @@ def get_ticket_byId(id):
     df=format_response(df,'notrecommend')
     return df
 def update_developer(Id,developer):
-    connection=pyodbc.connect(connection_string_local)
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
     query="Update RecommendationsData set  Recommended='"+str(developer)+"' where ID="+str(Id)
     print(query)
     cursor=connection.cursor()
@@ -95,7 +111,10 @@ def update_developer(Id,developer):
     cursor.close()
     return "Updated Successfully!"
 def get_current_developers():
-    connection=pyodbc.connect(connection_string_local)
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
     df=pd.read_sql(currentdevelopers,connection)
     connection.close()
     return df
@@ -113,7 +132,10 @@ def format_response(final_df,type='recommended'):
     return res
 
 def latest_defect(search='%'):
-    connection=pyodbc.connect(connection_string_local)
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
     df=pd.read_sql(latestquery+"where [Title] like '%"+search+"%'",connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
@@ -121,7 +143,10 @@ def latest_defect(search='%'):
     return df
 
 def paginated_tickets(pagesize,sortCol,sortDir,search,startpage):
-    connection=pyodbc.connect(connection_string_local)
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
     query="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where Title like '%"+search+"%') As TicketRows  WHERE ([index] >("+str(startpage)+") AND [index]<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
     searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where Title like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
     query=searchquery if search!='%' else query
