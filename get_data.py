@@ -154,8 +154,9 @@ def paginated_tickets(pagesize,sortCol,sortDir,search,startpage):
     count_query="Select count(*) from RecommendationsData where Title like '%"+search+"%'"
     #print(query)
     count=pd.read_sql(count_query,connection)
-    df=format_response(df,type='recommended')
-    return df,count
+    df1=df.copy()
+    formated_df=format_response(df,type='recommended')
+    return formated_df,count,df1
 
 dataframe=pull_data()
 

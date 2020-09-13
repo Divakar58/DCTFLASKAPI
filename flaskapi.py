@@ -13,10 +13,15 @@ from dotenv import load_dotenv
 from model import run_model,missing_values_treatment,seggregation
 import json
 from fuzzywuzzy import fuzz
+from datetime import datetime
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import *
 
 load_dotenv()
 
 df=pd.DataFrame({'a':[1,2,3,4,5],'b':[9,8,7,6,5],'c':[6,4,5,6,7]})
+ticketMail=pd.DataFrame({})
 
 # message=Mail(
 #     from_email='divakarkareddy@gmail.com',
@@ -68,7 +73,7 @@ def data():
 ###########################  ----- Visualize ----#####################
 @app.route('/visualize',methods=['POST','GET'])
 def visualize():
-    startDate=request.args.get('startDate',default=0,type=str)
+    startDate=request.args.get('startDate',default='',type=str)
     endDate=request.args.get('endDate',default='',type=str)
     print("startDate",startDate)
     if(startDate):
@@ -129,7 +134,10 @@ def predict():
     if search=='':
         search='%'
     #print("pagesize:",pagesize,"startpage:",startpage,"sortcol:",sortCol,"sortDir",sortDir,"search:",search)
-    res,ticketscount=paginated_tickets(pagesize,sortCol,sortDir,search,startpage)
+    res,ticketscount,df=paginated_tickets(pagesize,sortCol,sortDir,search,startpage)
+    global ticketMail
+    ticketMail=df[['ID','Title','Recommended','Developer1','Developer2','Developer3']]
+    ticketMail.columns=['ID','Ticket Description','Assigned','Developer1','Developer2','Developer3']
     #print(res)
     # if sortDir=='asc':
     #     sortDir=True
@@ -250,6 +258,12 @@ def similardefects():
     return {'results':results,'pageSize':count}
     #return {'results':{'id':list(map(str,data['ID'].values)),'title':list(data['Title'].values),'similarityscore':list(map(str,data['similarityscore'].values)),'pageSize':count}}
 
+# @app.route('/exportToExcel',methods=['GET','POST'])
+# def exportToExcel():
+#     #dataframe=request.args.get('model',default=pd.DataFrame({}))
+#     df.to_excel('tickets.xlsx')
+#     return {'results':'downloaded sucessfully'}
+
 @app.route('/runmodel',methods=['POST','GET'])
 def runmodel():
     data=request.get_json()
@@ -263,24 +277,46 @@ def runmodel():
         return {"model":"Ran successfully"},200
     #return Response({"model":"Ran successfully"},200,mimetype='application/json')
 
-# @app.route('/sendmail')
-# def sendmail():
-#     sendgrid=SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-#     df=pd.DataFrame({'a':[1,2,3,4,5],'b':[9,8,7,6,5],'c':[6,4,5,6,7]})
-#     message=Mail(
-#     from_email='divakarkareddy@gmail.com',
-#     to_emails='divakar.kareddy@duckcreek.com',
-#     subject='Recommendations Mail',
-#     html_content=render('email.html',column_names=df.columns.values,row_data=list(df.values.tolist())
-#     )
-#     res=sendgrid.send(message)
+@app.route('/sendmail',methods=['POST','GET'])
+def sendmail():
+    fromEmail=request.args.get('from',default='',type=str)
+    toEmail=request.args.get('to',default='',type=str)
+    subject=request.args.get('subject',default="tickets data",type=str)
+    toname=request.args.get('name',default="Divakar",type=str)
+    fromname=request.args.get('name',default="Manager",type=str)
+    sendgrid=SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+    table=ticketMail.to_html()
 
-#     print(res.status_code)
-#     return render_template('email.html',column_names=df.columns.values,row_data=list(df.values.tolist()))
-
-@app.route('/defectvisualize',methods=['GET','POST'])
-def defectvisualize(dataframe):
-    dataframe['Title']
+    email_content='''<p>Hi {Toname},</p><br><br>
+    <p>Please find the attached list of tickets and recommended developers</p>
+    {table}
+    <p>Please visit the following link to update the developer of a ticket
+    <a href='http://localhost:4200/#/tickets'>Update developer in ticket dashboard</a> </p>
+    <br>
+    <br>
+    <br>
+    Regards,
+    {FromName}
+    
+    '''.format(table=table,Toname=toname,FromName=fromname)
+    # mail_html =str(prolog+ticketMail.to_html()+epilog)
+    # mail_txt = 'This is a test email message.'
+    #mail_html = Content('text/html',prolog+'<br>'+ticketMail.to_html()+'<br>'+epilog)
+    #mail_txt = Content('This is a test email message.','text/plain')
+    message=Mail(
+    from_email='dinu818690@gmail.com',
+    to_emails='divakar.kareddy@duckcreek.com',#toEmail,
+    subject=subject,
+    html_content=email_content
+    )
+    #message.add_content('This is a test email message.','text/plain')
+    #res=sendgrid.send(message)
+    res=sendgrid.client.mail.send.post(request_body=message.get())
+    print("Response ",res.status_code)
+    if(res.status_code==200 or res.status_code==202):
+        return {'results':'Mail Sent Successfully!'}#render_template('email.html',column_names=df.columns.values,row_data=list(df.values.tolist()))
+    else:
+        return {'results':res.error}
 
 
 
