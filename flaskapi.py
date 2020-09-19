@@ -78,11 +78,13 @@ def visualize():
     print("startDate",startDate)
     if(startDate):
         if(endDate):
-            dataframe=pull_data_bydate(startDate,endDate)
+            dataframe,vis=pull_data_bydate(startDate,endDate)
         else:
-            dataframe=pull_data_bydate(startDate,'')
+            dataframe,vis=pull_data_bydate(startDate,'')
+    elif(endDate):
+        dataframe,vis=pull_data_bydate('',endDate)
     else:
-        dataframe=pull_data_bydate('','endDate')
+        dataframe,vis=pull_data_bydate('','')
     if len(dataframe.index)==0:
         return {}
     
@@ -95,12 +97,11 @@ def visualize():
     bar['labels']=list(dataframe['Seggregation'].value_counts().index)
     bar['values']=list(map(int,dataframe['Seggregation'].value_counts().values))
     defectschart={}
-    dataframe['createdDate2']=dataframe['Created Date'].dt.strftime('%Y-%m')
-    dataframe.sort_values(['createdDate2'],ascending=False,inplace=True)
-    #print(dataframe)
-    defectschart['labels']=list(dataframe.groupby(['createdDate2']).count()['Severity'].index)
-    defectschart['values']=list(map(int,dataframe.groupby(['createdDate2']).count()['Severity'].values))
-    #print(defectschart)
+    # dataframe['createdDate2']=dataframe['Created Date'].dt.strftime('%Y-%m')
+    # dataframe.sort_values(['createdDate2'],ascending=False,inplace=True)
+    defectschart['labels']=list(vis['createdDate2'].values)
+    defectschart['values']={"all":list(map(int,vis['All'].values)),"policy":list(map(int,vis['Policy'].values)),"billing":list(map(int,vis['Billing'].values)),"claims":list(map(int,vis['Claims'].values)),"other":list(map(int,vis['Other'].values))}
+    #print(defectschart['values'])
     pie={}
     pie['labels']=list(dataframe['Severity'].value_counts().index)
     pie['values']=list(map(int,dataframe['Severity'].value_counts().values))
@@ -258,11 +259,10 @@ def similardefects():
     return {'results':results,'pageSize':count}
     #return {'results':{'id':list(map(str,data['ID'].values)),'title':list(data['Title'].values),'similarityscore':list(map(str,data['similarityscore'].values)),'pageSize':count}}
 
-# @app.route('/exportToExcel',methods=['GET','POST'])
-# def exportToExcel():
-#     #dataframe=request.args.get('model',default=pd.DataFrame({}))
-#     df.to_excel('tickets.xlsx')
-#     return {'results':'downloaded sucessfully'}
+@app.route('/currentDevelopers',methods=['GET','POST'])
+def currentDevelp():
+    print("current developers",current_developers)
+    return {'results':list(current_developers)}
 
 @app.route('/runmodel',methods=['POST','GET'])
 def runmodel():

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import urllib
 from sqlalchemy import create_engine
 from datetime import date
-
+import ast
 
 load_dotenv()
 
@@ -15,7 +15,7 @@ drivers= [driver for driver in pyodbc.drivers()]
 # print(drivers)
 #connection_string="DRIVER={"+drivers[0]+"};SERVER=tcp:duckdb.database.windows.net,1433;DATABASE=ACRF;UID=dct;PWD=Duck@123;Encrypt=yes;TrustServerCertificate=no;"
 
-production=os.environ.get("PRODUCTION")
+production=ast.literal_eval(os.environ.get("PRODUCTION"))
 connection_string=os.environ.get("CONNECTION_STRING")
 connection_string_local=os.environ.get("CONNECTION_STRING_LOCAL")
 query=os.environ.get("TKTS_QUERY")
@@ -55,6 +55,16 @@ def pull_data():
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     return df
 
+def module_allocation(x):
+    if 'policy' in x.lower():
+        return "Policy"
+    elif 'billing' in x.lower():
+        return "Billing"
+    elif 'claims' in x.lower():
+        return "Claims"
+    else:
+        return "Other"
+
 def pull_data_bydate(startDate,endDate):
     if(production):
         connection=pyodbc.connect(connection_string)
@@ -76,11 +86,24 @@ def pull_data_bydate(startDate,endDate):
     df=pd.read_sql(querydate,connection)
     connection.close()
     print(df.head())
+
+    df['createdDate2']=pd.to_datetime(df['Created Date']).dt.strftime('%Y-%m')
+    df.sort_values('createdDate2',ascending=False,inplace=True)
+    df['Stream']=df['Module'].apply(module_allocation)
     df['Created Date']=pd.to_datetime(df['Created Date'],dayfirst=True)#.dt.date
-    # df['createdDate2']=df['Created Date'].dt.strftime('%Y-%m')
-    # df.sort_values('createdDate2',ascending=False,inplace=True)
+    k=pd.DataFrame(df.groupby(['createdDate2']).count()['ID'].reset_index())
+    a=pd.DataFrame(df[df['Stream']=='Policy'].groupby(['createdDate2']).count()['ID'].reset_index())
+    b=pd.DataFrame(df[df['Stream']=='Billing'].groupby(['createdDate2']).count()['ID'].reset_index())
+    c=pd.DataFrame(df[df['Stream']=='Claims'].groupby(['createdDate2']).count()['ID'].reset_index())
+    d=pd.DataFrame(df[df['Stream']=='Other'].groupby(['createdDate2']).count()['ID'].reset_index())
+    temp=pd.merge(k,a,on='createdDate2',how='left',suffixes=('_all', '_policy'))
+    temp1=pd.merge(temp,b,on='createdDate2',how='left')
+    temp2=pd.merge(temp1,c,on='createdDate2',how='left',suffixes=('_billing', '_claims'))
+    temp3=pd.merge(temp2,d,on='createdDate2',how='left')
+    temp3.fillna(0,inplace=True)
+    temp3.rename({'ID_all':'All','ID_policy':'Policy','ID_billing':'Billing','ID_claims':'Claims','ID':'Other'},axis=1,inplace=True)
     #print(df)
-    return df
+    return df,temp3
 
 def get_ticket_byId(id):
     if(production):
@@ -116,8 +139,9 @@ def get_current_developers():
     else:
         connection=pyodbc.connect(connection_string_local)
     df=pd.read_sql(currentdevelopers,connection)
+    print(df)
     connection.close()
-    return df
+    return df['Name'].values
 
 def format_response(final_df,type='recommended'):
     if(type=='recommended'):

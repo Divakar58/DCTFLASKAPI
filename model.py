@@ -28,9 +28,10 @@ from get_data import dataframe,get_current_developers
 
 # list_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
 #                             'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
-current_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
-                            'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
-#current_developers=get_current_developers()
+#current_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
+                           # 'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
+current_developers=get_current_developers()
+print("current developers",current_developers)
 Num_developer=3
 
 
