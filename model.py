@@ -31,7 +31,7 @@ from get_data import dataframe,get_current_developers
 #current_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
                            # 'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
 current_developers=get_current_developers()
-print("current developers",current_developers)
+#print("current developers",current_developers)
 Num_developer=3
 
 
@@ -138,7 +138,7 @@ def run_model(dataframe):
         return {"message":e.message} 
     current_dataframe=current_developer(dataframe,current_developers)
     model=modelling(current_dataframe)
-    print("Model Generated as pickle file")
+    # print("Model Generated as pickle file")
     pickle.dump(model,open('model.pkl', 'wb'))
     #return model
     return {"message": "Model ran successfull"},200

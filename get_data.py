@@ -34,7 +34,7 @@ def test(a):
 #     return connection
 
 #print(connection_string)
-def store_data(df):
+def store_data(table,df):
     if(production):
         quoted = urllib.parse.quote_plus(connection_string)
     else:
@@ -42,7 +42,8 @@ def store_data(df):
     engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
     df.drop_duplicates(inplace=True)
     df.sort_values(by='ID',inplace=True)
-    df.to_sql('TicketsData', schema='dbo', con = engine, if_exists='append')
+    df=df.set_index('ID')
+    df.to_sql(table, schema='dbo', con = engine, if_exists='append')
 
 
 def pull_data():
@@ -50,7 +51,8 @@ def pull_data():
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    df=pd.read_sql(query,connection)
+    tickethistoryquery=query+"where project_Id=1"
+    df=pd.read_sql(tickethistoryquery,connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     return df
@@ -72,25 +74,25 @@ def pull_data_bydate(startDate,endDate):
         connection=pyodbc.connect(connection_string_local)
     querydate=os.environ.get("TKTS_QUERY_BYDATE")
     #print(querydate)
-    print("startDate=",startDate,"endDate=",endDate)
+    # print("startDate=",startDate,"endDate=",endDate)
     if(startDate!=''):
         if(endDate!=''):
-            querydate=querydate+" where [Created Date]> '"+ startDate+ "' and [Created Date]<'"+endDate+"'"
+            querydate=querydate+" where [CreatedDate]> '"+ startDate+ "' and [CreatedDate]<'"+endDate+"'"
             print(querydate)
         else:
-            querydate=querydate+" where [Created Date]> '"+ startDate +"'"
+            querydate=querydate+" where [CreatedDate]> '"+ startDate +"'"
             print(querydate)
     else:
         querydate=querydate
-    print(querydate)
+    # print(querydate)
     df=pd.read_sql(querydate,connection)
     connection.close()
-    print(df.head())
+    # print(df.head())
 
-    df['createdDate2']=pd.to_datetime(df['Created Date']).dt.strftime('%Y-%m')
+    df['createdDate2']=pd.to_datetime(df['CreatedDate']).dt.strftime('%Y-%m')
     df.sort_values('createdDate2',ascending=False,inplace=True)
     df['Stream']=df['Module'].apply(module_allocation)
-    df['Created Date']=pd.to_datetime(df['Created Date'],dayfirst=True)#.dt.date
+    df['Created Date']=pd.to_datetime(df['CreatedDate'],dayfirst=True)#.dt.date
     k=pd.DataFrame(df.groupby(['createdDate2']).count()['ID'].reset_index())
     a=pd.DataFrame(df[df['Stream']=='Policy'].groupby(['createdDate2']).count()['ID'].reset_index())
     b=pd.DataFrame(df[df['Stream']=='Billing'].groupby(['createdDate2']).count()['ID'].reset_index())
@@ -121,10 +123,10 @@ def update_developer(Id,developer):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    query="Update RecommendationsData set  Recommended='"+str(developer)+"' where ID="+str(Id)
-    print(query)
+    updatequery="Update RecommendationsData set  Recommended='"+str(developer)+"' where ID="+str(Id)
+    # print(query)
     cursor=connection.cursor()
-    cursor.execute(query)
+    cursor.execute(updatequery)
     cursor.commit()
     # try:
     #     cursor.execute(query)
@@ -139,7 +141,7 @@ def get_current_developers():
     else:
         connection=pyodbc.connect(connection_string_local)
     df=pd.read_sql(currentdevelopers,connection)
-    print(df)
+    # print(df)
     connection.close()
     return df['Name'].values
 
@@ -171,10 +173,10 @@ def paginated_tickets(pagesize,sortCol,sortDir,search,startpage):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    query="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where Title like '%"+search+"%') As TicketRows  WHERE ([index] >("+str(startpage)+") AND [index]<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
+    pagequery="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where Title like '%"+search+"%') As TicketRows  WHERE ([index] >("+str(startpage)+") AND [index]<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
     searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where Title like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
-    query=searchquery if search!='%' else query
-    df=pd.read_sql(query,connection)
+    pagequery=searchquery if search!='%' else pagequery
+    df=pd.read_sql(pagequery,connection)
     count_query="Select count(*) from RecommendationsData where Title like '%"+search+"%'"
     #print(query)
     count=pd.read_sql(count_query,connection)

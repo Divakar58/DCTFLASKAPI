@@ -97,7 +97,7 @@ def prediction(latest_defect):
     #final_df['Devel']=final_df['Developers'].str
     final_df[['Date','Title','Developer1','Developer2','Developer3','ID','Recommended']].to_csv('data.csv')
     try:
-        store_data(final_df[['Date','Title','Developer1','Developer2','Developer3','ID','Recommended']])
+        store_data('RecommendationsData',final_df[['Date','Title','Developer1','Developer2','Developer3','ID','Recommended']])
     except Exception as e:
         return str(e)
     else:

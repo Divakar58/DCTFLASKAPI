@@ -5,7 +5,7 @@ import pandas as pd
 import pyodbc
 import pandas.io.sql as psql
 from model import current_developers
-from get_data import dataframe,latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data
+from get_data import dataframe,latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data
 from flask_cors import CORS
 import os
 from os.path import join, dirname
@@ -47,6 +47,8 @@ DEBUG=eval(os.environ.get("DEBUG"))
 
 PRODUCTION=eval(os.environ.get("PRODUCTION"))
 
+FILE_FOLDER_PATH=os.environ.get("FILE_UPLOAD")
+
 
 PORT = int(os.environ.get("PORT"))
 
@@ -75,27 +77,27 @@ def data():
 def visualize():
     startDate=request.args.get('startDate',default='',type=str)
     endDate=request.args.get('endDate',default='',type=str)
-    print("startDate",startDate)
+    #print("startDate",startDate)
     if(startDate):
         if(endDate):
-            dataframe,vis=pull_data_bydate(startDate,endDate)
+            visualdataframe,vis=pull_data_bydate(startDate,endDate)
         else:
-            dataframe,vis=pull_data_bydate(startDate,'')
+            visualdataframe,vis=pull_data_bydate(startDate,'')
     elif(endDate):
-        dataframe,vis=pull_data_bydate('',endDate)
+        visualdataframe,vis=pull_data_bydate('',endDate)
     else:
-        dataframe,vis=pull_data_bydate('','')
-    if len(dataframe.index)==0:
+        visualdataframe,vis=pull_data_bydate('','')
+    if len(visualdataframe.index)==0:
         return {}
     
 
-    dataframe['Seggregation']=dataframe[['Title','Module']].apply(seggregation,axis=1)
+    visualdataframe['Seggregation']=visualdataframe[['Title','Module']].apply(seggregation,axis=1)
     line={}
-    line['labels']=list(dataframe['Developer'][dataframe['Developer'].isin(current_developers)].value_counts().index.values)
-    line['values']=list(map(int,dataframe['Developer'][dataframe['Developer'].isin(current_developers)].value_counts().values))
+    line['labels']=list(visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().index.values)
+    line['values']=list(map(int,visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().values))
     bar={}
-    bar['labels']=list(dataframe['Seggregation'].value_counts().index)
-    bar['values']=list(map(int,dataframe['Seggregation'].value_counts().values))
+    bar['labels']=list(visualdataframe['Seggregation'].value_counts().index)
+    bar['values']=list(map(int,visualdataframe['Seggregation'].value_counts().values))
     defectschart={}
     # dataframe['createdDate2']=dataframe['Created Date'].dt.strftime('%Y-%m')
     # dataframe.sort_values(['createdDate2'],ascending=False,inplace=True)
@@ -103,10 +105,10 @@ def visualize():
     defectschart['values']={"all":list(map(int,vis['All'].values)),"policy":list(map(int,vis['Policy'].values)),"billing":list(map(int,vis['Billing'].values)),"claims":list(map(int,vis['Claims'].values)),"other":list(map(int,vis['Other'].values))}
     #print(defectschart['values'])
     pie={}
-    pie['labels']=list(dataframe['Severity'].value_counts().index)
-    pie['values']=list(map(int,dataframe['Severity'].value_counts().values))
+    pie['labels']=list(visualdataframe['Severity'].value_counts().index)
+    pie['values']=list(map(int,visualdataframe['Severity'].value_counts().values))
     defectsdata={}
-    df=dataframe
+    df=visualdataframe.copy()
 
     ls=list(df.groupby('Module').count()[df.groupby('Module').count()['Severity']<10].index)
     df['Module']=df['Module'].replace(ls,'Others')
@@ -131,7 +133,6 @@ def predict():
     sortDir=request.args.get('sort_dir',default='asc',type=str)
     search=request.args.get('search',default='%',type=str)
     startpage=int(pagesize)*(start-1)
-    print(pagesize,start,startpage,sortCol,search,sortDir)
     if search=='':
         search='%'
     #print("pagesize:",pagesize,"startpage:",startpage,"sortcol:",sortCol,"sortDir",sortDir,"search:",search)
@@ -174,12 +175,12 @@ def predict():
 @app.route('/view',methods=['POST','GET'])
 def view():
     ticketdata=latest_defect()
-    print("Before Prediction")
+    # print("Before Prediction")
     global tickets
     tickets=len(ticketdata.index)
     result=prediction(ticketdata)
     #prediction(ticketdata)
-    print("After Prediction")
+    # print("After Prediction")
     
     return {"results":result},200 if result=="sucess" else 500 
 
@@ -194,22 +195,22 @@ def update():
     return json.dumps({"results":result}),200
 
 ###########################  ----- Predicts ----#####################
-@app.route('/predicts',methods=['POST','GET'])
-def predicts():
-    print("Before Prediction")
-    # print("missing Value treatment")
-    # treated_tickets=missing_values_treatment(paging_tickets)
-    ticketdata=latest_defect()
-    # treated_tickets.drop('Developer',inplace=True,axis=1)
-    #print(treated_tickets['Title'])
-    #print(ticketdata['Title'])
-    #result=prediction(ticketdata)
-    global result
-    result=prediction(ticketdata)
-    print("After Prediction")
-    return json.dumps({"results":result}),200
-    #return {"results":result,"pagesize":pagesize}
-    #return Response(result,mimetype='application/json')
+# @app.route('/predicts',methods=['POST','GET'])
+# def predicts():
+#     print("Before Prediction")
+#     # print("missing Value treatment")
+#     # treated_tickets=missing_values_treatment(paging_tickets)
+#     ticketdata=latest_defect()
+#     # treated_tickets.drop('Developer',inplace=True,axis=1)
+#     #print(treated_tickets['Title'])
+#     #print(ticketdata['Title'])
+#     #result=prediction(ticketdata)
+#     global result
+#     result=prediction(ticketdata)
+#     print("After Prediction")
+#     return json.dumps({"results":result}),200
+#     #return {"results":result,"pagesize":pagesize}
+#     #return Response(result,mimetype='application/json')
 
 ###########################  ----- Recommended Developer ----#####################
 @app.route('/recommendedDeveloper',methods=['POST','GET'])
@@ -261,7 +262,7 @@ def similardefects():
 
 @app.route('/currentDevelopers',methods=['GET','POST'])
 def currentDevelp():
-    print("current developers",current_developers)
+    #print("current developers",current_developers)
     return {'results':list(current_developers)}
 
 @app.route('/runmodel',methods=['POST','GET'])
@@ -318,6 +319,45 @@ def sendmail():
     else:
         return {'results':res.error}
 
+@app.route("/UploadFile", methods=["GET", "POST","PUT"])
+def uploadFile():
+    project=request.args.get('project',default='',type=str)
+    #file=request.args.get('File',default='',type=str)
+    #print(request)
+    print(project)
+    if request.method == "POST" or request.method == "PUT":
+        if request.files:
+            file = request.files["File"]            
+            file.save(file.filename)
+            df=pd.DataFrame({})
+            #try:
+            if('.xlsx' in file.filename or '.xls' in file.filename):
+                df=pd.read_excel(file.filename)
+                df_old=pull_data()
+                df=pd.concat([df_old,df])
+                df['Project_Id']=project
+                df.drop_duplicates(inplace=True)
+                #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','Created Date','Root Cause','Project_Id']
+                os.remove(file.filename)
+                df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.strftime("%Y-%m-%d")
+                store_data('TicketHistory',df)
+            elif('.csv' in file.filename):
+                print(file.filename)
+                df=pd.read_csv(file.filename)
+                df_old=pull_data()
+                df=pd.concat([df_old,df])
+                df['Project_Id']=project
+                df.drop_duplicates(inplace=True)
+                os.remove(file.filename)
+                #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','Created Date','Root Cause','Project_Id']                    
+                #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.strftime("%Y-%m-%d")
+                store_data('TicketHistory',df)
+            #except Exception as e:
+                #print(e)
+            #return {'results':'failed to store in database because of '+str(e)}
+        else:
+            return {'results':'error'}                                       
+    return {'results':'success'}
 
 
 if __name__ == "__main__":
