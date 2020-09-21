@@ -305,8 +305,8 @@ def sendmail():
     #mail_html = Content('text/html',prolog+'<br>'+ticketMail.to_html()+'<br>'+epilog)
     #mail_txt = Content('This is a test email message.','text/plain')
     message=Mail(
-    from_email='dinu818690@gmail.com',
-    to_emails='divakar.kareddy@duckcreek.com',#toEmail,
+    from_email=fromEmail,
+    to_emails=toEmail,
     subject=subject,
     html_content=email_content
     )
