@@ -20,10 +20,13 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 #from sklearn.metrics import classification_report
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
+import xgboost
 import re
 import pickle
 #from prediction import modelling
 from get_data import dataframe,get_current_developers
+from sklearn.metrics import classification_report,accuracy_score
 
 
 # list_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
@@ -54,48 +57,56 @@ def current_developer(dataframe,current_developers):
     return dataframe[dataframe['Developer'].isin(current_developers)]
     #return dataframe.head(500)
 
-def seggregation(a):
-    x,y=a
-    if 'policy' in y.lower():
-        if 'transact' in x.lower():
-            return 'TransACT'
-        elif 'applicant' in x.lower():
-            return 'Account'
-        elif 'skins' in x.lower() or 'align' in x.lower() or 'javascript' in x.lower() or 'ajax' in x.lower():
-            return 'Skins'
-        elif 'premium' in x.lower() or 'pric' in x.lower():
-            return 'Rating'
-        elif 'privilege' in x.lower() or 'useradmin' in x.lower() or 'roles' in x.lower() or 'entity' in x.lower():
-            return 'UserAdmin'
-        elif 'risk' in x.lower():
-            return 'Risk'
-        elif 'form' in x.lower() or 'doc' in x.lower():
-            return 'Forms'
-        elif 'search' in x.lower():
-            return 'Search'
-        elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
-            return 'Party'
-        else:
-            return 'PolicyOther'
-    elif 'billing' in y.lower():
-        if 'invoice' in x.lower():
-            return 'Invoice'
-        elif 'disbursement' in x.lower():
-            return 'Disbursement'
-        elif 'payment' in x.lower():
-            return 'Payment'
-        elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
-            return 'Party'
-        return 'BillingOther'
-        
-    elif 'claims' in y.lower():
-        if 'party' in x.lower() or 'ofac' in x.lower() or 'geo' in x.lower():
-            return 'Party'
-        elif 'coverage' in x.lower():
-            return 'CoverageMatch'
-        elif 'attach' in x.lower():
-            return 'AttachPolicy' 
-        return 'ClaimsOther'
+# def seggregation(a):
+#     x,y=a
+#     if(y is not None and x is not None):
+#         if 'policy' in y.lower():
+#             if 'transact' in x.lower():
+#                 return pd.Series(['TransACT','Policy'],index=['Seggregation','Application'])
+#             elif 'applicant' in x.lower():
+#                 return pd.Series(['Account','Policy'],index=['Seggregation','Application'])
+#             elif 'skins' in x.lower() or 'align' in x.lower() or 'javascript' in x.lower() or 'ajax' in x.lower():
+#                 return pd.Series(['Skins','Policy'],index=['Seggregation','Application'])
+#             elif 'premium' in x.lower() or 'pric' in x.lower():
+#                 return pd.Series(['Rating','Policy'],index=['Seggregation','Application'])
+#             elif 'privilege' in x.lower() or 'useradmin' in x.lower() or 'roles' in x.lower() or 'entity' in x.lower():
+#                 return pd.Series(['UserAdmin','Policy'],index=['Seggregation','Application'])
+#             elif 'risk' in x.lower():
+#                 return pd.Series(['Risk','Policy'],index=['Seggregation','Application'])
+#             elif 'form' in x.lower() or 'doc' in x.lower():
+#                 return pd.Series(['Forms','Policy'],index=['Seggregation','Application'])
+#             elif 'search' in x.lower():
+#                 return pd.Series(['Search','Policy'],index=['Seggregation','Application'])
+#             elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
+#                 return pd.Series(['Party','Policy'],index=['Seggregation','Application'])
+#             else:
+#                 return pd.Series(['PolicyOther','Policy'],index=['Seggregation','Application'])
+#         elif 'billing' in y.lower():
+#             if 'invoice' in x.lower():
+#                 return pd.Series(['Invoice','Billing'],index=['Seggregation','Application'])
+#             elif 'disbursement' in x.lower():
+#                 return pd.Series(['Disbursement','Billing'],index=['Seggregation','Application'])
+#             elif 'payment' in x.lower():
+#                 return pd.Series(['Payment','Billing'],index=['Seggregation','Application'])
+#             elif 'schedule' in x.lower():
+#                 return pd.Series(['ScheduleActivity','Billing'],index=['Seggregation','Application'])
+#             elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
+#                 return pd.Series(['Party','Billing'],index=['Seggregation','Application'])
+#             else:
+#                 return pd.Series(['BillingOther','Billing'],index=['Seggregation','Application'])
+#         elif 'claims' in y.lower():
+#             if 'party' in x.lower() or 'ofac' in x.lower() or 'geo' in x.lower():
+#                 return pd.Series(['Party','Claims'],index=['Seggregation','Application'])
+#             elif 'coverage' in x.lower():
+#                 return pd.Series(['CoverageMatch','Claims'],index=['Seggregation','Application'])
+#             elif 'attach' in x.lower():
+#                 return pd.Series(['AttachPolicy','Claims'],index=['Seggregation','Application'])
+#             else:
+#                 return pd.Series(['ClaimsOther','Claims'],index=['Seggregation','Application'])
+#         else:
+#             return pd.Series(['Other','Other'],index=['Seggregation','Application'])
+#     else:
+#         return pd.Series(['NULL','NULL'],index=['Seggregation','Application'])
 
 def modelling(dataframe):
     print("modelling")
@@ -104,38 +115,47 @@ def modelling(dataframe):
     #X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0,random_state=42)
     tcv=CountVectorizer(analyzer=text_process)
     tfv=TfidfTransformer()
-    sm=SMOTE(k_neighbors=3,n_jobs=-1)
-    #svc=SVC(kernel='rbf',probability=True)
+    sm=SMOTE(k_neighbors=1,n_jobs=-1)#k_neighbors=3,
+    svc=SVC(kernel='rbf',probability=True)
     mb=MultinomialNB()
-    pipe=make_pipeline(tcv,tfv,sm,mb)
+    rfc=RandomForestClassifier()
+    xgb=xgboost()
+    pipe=make_pipeline(tcv,tfv,sm,xgb)
+    #pipe=make_pipeline(tcv,tfv,mb)
     #pipe.fit(X=X_train,y=y_train)
     pipe.fit(X,y)
     return pipe
 
-def evaluation():
-    print("modelling")
+def evaluation(dataframe):
+    print("evaluation")
+    try:
+        dataframe=missing_values_treatment(dataframe)
+    except Exception as e:
+        return {"message":"error"} 
+    dataframe=current_developer(dataframe,current_developers)
     X=dataframe['Title']
     y=dataframe['Developer']
     X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
     tcv=CountVectorizer(analyzer=text_process)
     tfv=TfidfTransformer()
-    sm=SMOTE(k_neighbors=3,n_jobs=-1)
-    #svc=SVC(kernel='rbf',probability=True)
-    mb=MultinomialNB()
-    pipe=make_pipeline(tcv,tfv,sm,mb)
+    sm=SMOTE(k_neighbors=1,n_jobs=-1)
+    svc=SVC(kernel='rbf',probability=True)
+    rfc=RandomForestClassifier()
+    #mb=MultinomialNB()
+    pipe=make_pipeline(tcv,tfv,sm,rfc)
+    #pipe=make_pipeline(tcv,tfv,mb)
     pipe.fit(X=X_train,y=y_train)
     y_predict=pipe.predict(X_test)
-    from sklearn.metrics import classification_report,accuracy_score
     print(classification_report(y_test,y_predict))
-    #print(accuracy_score(y_test,y_predict))
-    return {"accuracy_score":accuracy_score(y_test,y_predict)}
+    print("Accuracy",accuracy_score(y_test,y_predict))
+    return accuracy_score(y_test,y_predict)
 
 
 def run_model(dataframe):
     try:
         dataframe=missing_values_treatment(dataframe)
-    except e:
-        return {"message":e.message} 
+    except Exception as e:
+        return {"message":e} 
     current_dataframe=current_developer(dataframe,current_developers)
     model=modelling(current_dataframe)
     # print("Model Generated as pickle file")
@@ -166,9 +186,9 @@ def recommended_developer(lis):
     return lis[lis.values==max(lis.values)].index[0]
     #return bestpipeline.classes_[lis.index(max(lis))]
 
-def latest_defect():
-    connection_string="Driver={SQL Server};"+"Server=(local);"+"Database=TFS;"+"username=DCTSqlUser;"+"password=orange#5;"+"Trusted_connect=yes;"
-    query="select * from TFSDATA where "
+# def latest_defect():
+#     connection_string="Driver={SQL Server};"+"Server=(local);"+"Database=TFS;"+"username=DCTSqlUser;"+"password=orange#5;"+"Trusted_connect=yes;"
+#     query="select * from TFSDATA where "
 
 # def model_building(dataframe):
 #     X=dataframe[['Title','Module']]

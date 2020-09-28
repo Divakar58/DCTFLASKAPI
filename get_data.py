@@ -21,6 +21,7 @@ connection_string_local=os.environ.get("CONNECTION_STRING_LOCAL")
 query=os.environ.get("TKTS_QUERY")
 latestquery=os.environ.get("LATEST_TICKETS")
 currentdevelopers=os.environ.get("CURRENT_DEVELOPERS")
+TKTS_QUERY_BYID=FILE_FOLDER_PATH=os.environ.get("TKTS_QUERY_BYID")
 
 
 
@@ -34,7 +35,7 @@ def test(a):
 #     return connection
 
 #print(connection_string)
-def store_data(table,df):
+def store_data(table,df,if_exist='append'):
     if(production):
         quoted = urllib.parse.quote_plus(connection_string)
     else:
@@ -43,7 +44,7 @@ def store_data(table,df):
     df.drop_duplicates(inplace=True)
     df.sort_values(by='ID',inplace=True)
     df=df.set_index('ID')
-    df.to_sql(table, schema='dbo', con = engine, if_exists='append')
+    df.to_sql(table, schema='dbo', con = engine, if_exists=if_exist)
 
 
 def pull_data():
@@ -51,36 +52,55 @@ def pull_data():
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    tickethistoryquery=query+"where project_Id=1"
+    tickethistoryquery=query+"and project_Id=1"
     df=pd.read_sql(tickethistoryquery,connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     return df
 
-def module_allocation(x):
-    if 'policy' in x.lower():
-        return "Policy"
-    elif 'billing' in x.lower():
-        return "Billing"
-    elif 'claims' in x.lower():
-        return "Claims"
+def getticket_databyId(id):
+    ticket={}
+    if(production):
+        connection=pyodbc.connect(connection_string)
     else:
-        return "Other"
+        connection=pyodbc.connect(connection_string_local)
+    getticketquery=TKTS_QUERY_BYID +" where Id="+str(id)
+    df=pd.read_sql(getticketquery,connection)
+    df1=df.copy()
+    df1['CreatedDate']=pd.to_datetime(df1['CreatedDate']).dt.strftime('%Y-%m-%d')
+    connection.close()
+    for col in df1.columns:
+        ticket[col]=str(df1[col].values[0])
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return df1,ticket
+
+def module_allocation(x):
+    if(x is not None):
+        if 'policy' in x.lower():
+            return "Policy"
+        elif 'billing' in x.lower():
+            return "Billing"
+        elif 'claims' in x.lower():
+            return "Claims"
+        else:
+            return "Other"
+    else:
+        return None
 
 def pull_data_bydate(startDate,endDate):
     if(production):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    querydate=os.environ.get("TKTS_QUERY_BYDATE")
+    querydate=os.environ.get("TKTS_QUERY")
     #print(querydate)
     # print("startDate=",startDate,"endDate=",endDate)
     if(startDate!=''):
         if(endDate!=''):
-            querydate=querydate+" where [CreatedDate]> '"+ startDate+ "' and [CreatedDate]<'"+endDate+"'"
+            querydate=querydate+" and [CreatedDate]> '"+ startDate+ "' and [CreatedDate]<'"+endDate+"'"
             print(querydate)
         else:
-            querydate=querydate+" where [CreatedDate]> '"+ startDate +"'"
+            querydate=querydate+" and [CreatedDate]> '"+ startDate +"'"
             print(querydate)
     else:
         querydate=querydate
@@ -162,7 +182,7 @@ def latest_defect(search='%'):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    df=pd.read_sql(latestquery+"where [Title] like '%"+search+"%'",connection)
+    df=pd.read_sql(latestquery,connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     #print(df.head())

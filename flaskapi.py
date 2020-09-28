@@ -5,12 +5,13 @@ import pandas as pd
 import pyodbc
 import pandas.io.sql as psql
 from model import current_developers
-from get_data import dataframe,latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data
+from get_data import dataframe,latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data,getticket_databyId
 from flask_cors import CORS
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from model import run_model,missing_values_treatment,seggregation
+from model import run_model,missing_values_treatment,evaluation
+from utils.utilfunctions import seggregation,formatseveritylist
 import json
 from fuzzywuzzy import fuzz
 from datetime import datetime
@@ -89,24 +90,63 @@ def visualize():
         visualdataframe,vis=pull_data_bydate('','')
     if len(visualdataframe.index)==0:
         return {}
-    
-
-    visualdataframe['Seggregation']=visualdataframe[['Title','Module']].apply(seggregation,axis=1)
+    visualdataframe[['Seggregation','Application']]=pd.DataFrame(visualdataframe[['Title','Module']].apply(seggregation,axis=1))
+    #print(visualdataframe.head(50))
     line={}
+    visualdataframe.sort_values(by='Developer',ascending=True,inplace=True)
     line['labels']=list(visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().index.values)
     line['values']=list(map(int,visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().values))
+    devvisualdf=visualdataframe[visualdataframe['Developer'].isin(current_developers)]
+    devvisualdf=pd.DataFrame(devvisualdf.groupby(['Developer','Severity']).count()['ID']).reset_index()
+    devvisualdf.sort_values(by='Developer',ascending=True,inplace=True)
+    devvisualdf['List']=devvisualdf[['Severity','ID']].apply(formatseveritylist,axis=1)
+    devp=[]
+    sevl=[]
+    for i in sorted(current_developers):
+        devp.append(i)
+        sevl.append(list(devvisualdf[devvisualdf['Developer']==i]['List'].values))
+    line['drilllabels']=devp
+    line['drillvalues']=sevl
     bar={}
-    bar['labels']=list(visualdataframe['Seggregation'].value_counts().index)
-    bar['values']=list(map(int,visualdataframe['Seggregation'].value_counts().values))
+    bar['labels']=list(visualdataframe['Application'].value_counts().index)
+    bar['values']=list(map(int,visualdataframe['Application'].value_counts().values))
+    
+    labels={}
+    values={}
+    vdf=pd.DataFrame(visualdataframe.groupby(['Application','Seggregation']).count()['ID']).reset_index()
+    labels['billinglabels']=list(vdf[vdf['Application']=='Billing']['Seggregation'].values)
+    labels['policylabels']=list(vdf[vdf['Application']=='Policy']['Seggregation'].values)
+    labels['claimslabels']=list(vdf[vdf['Application']=='Claims']['Seggregation'].values)
+    labels['partylabels']=list(vdf[vdf['Application']=='Party']['Seggregation'].values)
+    labels['otherlabels']=list(vdf[vdf['Application']=='Other']['Seggregation'].values)
+    values['billingvalues']=list(map(str,vdf[vdf['Application']=='Billing']['ID'].values))
+    values['policyvalues']=list(map(str,vdf[vdf['Application']=='Policy']['ID'].values))
+    values['claimsvalues']=list(map(str,vdf[vdf['Application']=='Claims']['ID'].values))
+    values['partyvalues']=list(map(str,vdf[vdf['Application']=='Party']['ID'].values))
+    values['othervalues']=list(map(str,vdf[vdf['Application']=='Other']['ID'].values))
+    labels['appnames']=list(pd.DataFrame(visualdataframe.groupby(['Application']).count())['ID'].index)
+    values['appvalues']=list(map(str,pd.DataFrame(visualdataframe.groupby(['Application']).count())['ID'].values))
     defectschart={}
     # dataframe['createdDate2']=dataframe['Created Date'].dt.strftime('%Y-%m')
     # dataframe.sort_values(['createdDate2'],ascending=False,inplace=True)
     defectschart['labels']=list(vis['createdDate2'].values)
     defectschart['values']={"all":list(map(int,vis['All'].values)),"policy":list(map(int,vis['Policy'].values)),"billing":list(map(int,vis['Billing'].values)),"claims":list(map(int,vis['Claims'].values)),"other":list(map(int,vis['Other'].values))}
-    #print(defectschart['values'])
+
     pie={}
-    pie['labels']=list(visualdataframe['Severity'].value_counts().index)
-    pie['values']=list(map(int,visualdataframe['Severity'].value_counts().values))
+    #visualdf=pd.DataFrame(visualdataframe.groupby(['Application','Severity']).sum()['Percent']).reset_index()
+    pie['labels']=list(visualdataframe['Application'].value_counts().index)
+    pie['values']=list(map(int,visualdataframe['Application'].value_counts().values))
+    appdf=pd.DataFrame(visualdataframe.groupby(['Application','Severity']).count()['ID']).reset_index()
+    appdf['SeverityList']=appdf[['Severity','ID']].apply(formatseveritylist,axis=1)
+    devp=[]
+    sevl=[]
+    for i in sorted(appdf['Application'].unique()):
+        devp.append(i)
+        sevl.append(list(appdf[appdf['Application']==i]['SeverityList'].values))
+    pie['drilllabels']=devp
+    pie['drillvalues']=sevl
+
+
     defectsdata={}
     df=visualdataframe.copy()
 
@@ -116,10 +156,10 @@ def visualize():
     defectsdata['labels']=list(df['Module'].value_counts().index)
     defectsdata['values']=list(map(int,df['Module'].value_counts().values))
     #print(defectsdata)
-    return {"line_data":{"labels":line['labels'],"values":line['values']},
-    "bar_data":{"labels":bar['labels'],"values":bar['values']},
+    return {"line_data":{"labels":line['labels'],"values":line['values'],"drilllabels":line['drilllabels'],"drillvalues":line['drillvalues']},
+    "bar_data":{"labels":labels,"values":values},
     "defectschart_data":{"labels":defectschart['labels'],"values":defectschart['values']},
-    "pie_data":{"labels":pie['labels'],"values":pie['values']},
+    "pie_data":{"labels":pie['labels'],"values":pie['values'],"drilllabels":pie['drilllabels'],"drillvalues":pie['drillvalues']},
     "defects_data":{"labels":defectsdata['labels'],"values":defectsdata['values']}},200 #pd.DataFrame(dis).to_json(),200
 
 ###########################  ----- Predict ----#####################
@@ -172,7 +212,7 @@ def predict():
     #return Response(result,mimetype='application/json')
 
 ###########################  ----- View ----#####################
-@app.route('/view',methods=['POST','GET'])
+@app.route('/recommendations',methods=['POST','GET'])
 def view():
     ticketdata=latest_defect()
     # print("Before Prediction")
@@ -260,6 +300,13 @@ def similardefects():
     return {'results':results,'pageSize':count}
     #return {'results':{'id':list(map(str,data['ID'].values)),'title':list(data['Title'].values),'similarityscore':list(map(str,data['similarityscore'].values)),'pageSize':count}}
 
+@app.route('/ticketDetails',methods=['GET','POST'])
+def ticketDetails():
+    ticketId=request.args.get('ticketId',default=0,type=int)
+    ticketdata,res=getticket_databyId(ticketId)
+    result=ticketdata.to_json(orient='records')
+    return {'results':res}
+
 @app.route('/currentDevelopers',methods=['GET','POST'])
 def currentDevelp():
     #print("current developers",current_developers)
@@ -277,6 +324,18 @@ def runmodel():
         #print("")
         return {"model":"Ran successfully"},200
     #return Response({"model":"Ran successfully"},200,mimetype='application/json')
+
+@app.route('/evaluation',methods=['POST','GET'])
+def evaluation1():
+    #data=request.get_json()
+    try:
+        result=evaluation(dataframe)
+    except Exception as e:
+        print(e)
+        return {"model": "failed"},500
+    else:
+        return {"model":result},200
+
 
 @app.route('/sendmail',methods=['POST','GET'])
 def sendmail():
@@ -340,7 +399,7 @@ def uploadFile():
                 #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','Created Date','Root Cause','Project_Id']
                 os.remove(file.filename)
                 df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.strftime("%Y-%m-%d")
-                store_data('TicketHistory',df)
+                store_data('TicketHistory',df,'replace')
             elif('.csv' in file.filename):
                 print(file.filename)
                 df=pd.read_csv(file.filename)
@@ -351,7 +410,7 @@ def uploadFile():
                 os.remove(file.filename)
                 #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','Created Date','Root Cause','Project_Id']                    
                 #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.strftime("%Y-%m-%d")
-                store_data('TicketHistory',df)
+                store_data('TicketHistory',df,'replace')
             #except Exception as e:
                 #print(e)
             #return {'results':'failed to store in database because of '+str(e)}
