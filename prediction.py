@@ -12,7 +12,7 @@ from warnings import filterwarnings
 filterwarnings('ignore')
 import pandas as pd
 import pickle
-from get_data import store_data
+from get_data import store_data,getDataFromRecommnedations
 from datetime import date
 
 current_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
@@ -53,6 +53,7 @@ def recommendation_list(lis,Num_developer=3):
     #print(lis)
     #lis=lis[current_developers]
     lis=lis.sort_values(ascending=False)
+    
     return list(lis[:Num_developer].index.values)
     
 def test(a):
@@ -75,6 +76,7 @@ def prediction(latest_defect):
     X_test=df['Title']
     #print(X_test)
     model=load_model()
+    print("pickle file Loaded")
     final_df=pd.DataFrame(100*(model.predict_proba(X_test).round(4)),columns=model.classes_,index=X_test.index)
     #final_df['Recommended Developer']=final_df.apply(recommended_developer,axis=1)
     final_df['Developers']=final_df.apply(recommendation_list,axis=1)
@@ -95,10 +97,19 @@ def prediction(latest_defect):
     final_df['Date']=final_df['Date'].apply(lambda x:x.strftime('%Y-%m-%d'))
     #final_df[['Title','Developers','Id']]
     #final_df['Devel']=final_df['Developers'].str
-    final_df[['Date','Title','Developer1','Developer2','Developer3','ID','Recommended']].to_csv('data.csv')
+    final_df.reset_index(inplace=True)
+    final_df.sort_values(by='index',inplace=True,ascending=True)
+    final_df[['index','Date','Title','Developer1','Developer2','Developer3','ID','Recommended']].to_csv('data.csv')
+    df_old=pd.DataFrame({})
+    df_old=getDataFromRecommnedations()
+    final_data=pd.read_csv('data.csv')
+    final_df1=pd.concat([df_old,final_data])
+    final_df1.drop_duplicates(inplace=True)
+    print(final_df1.head())
     try:
-        store_data('RecommendationsData',final_df[['Date','Title','Developer1','Developer2','Developer3','ID','Recommended']])
+        store_data('RecommendationsData',final_df1[['index','Date','Title','Developer1','Developer2','Developer3','ID','Recommended']],'replace')
     except Exception as e:
+        print("Exception")
         return str(e)
     else:
         return "sucess"

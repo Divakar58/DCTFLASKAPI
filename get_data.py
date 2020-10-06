@@ -20,9 +20,10 @@ connection_string=os.environ.get("CONNECTION_STRING")
 connection_string_local=os.environ.get("CONNECTION_STRING_LOCAL")
 query=os.environ.get("TKTS_QUERY")
 latestquery=os.environ.get("LATEST_TICKETS")
+CLOSED_TICKETS=os.environ.get("CLOSED_TICKETS")
 currentdevelopers=os.environ.get("CURRENT_DEVELOPERS")
-TKTS_QUERY_BYID=FILE_FOLDER_PATH=os.environ.get("TKTS_QUERY_BYID")
-
+TKTS_QUERY_BYID=os.environ.get("TKTS_QUERY_BYID")
+RECOMMENDED_TICKETS=os.environ.get("RECOMMENDED_TICKETS")
 
 
 def test(a):
@@ -36,15 +37,19 @@ def test(a):
 
 #print(connection_string)
 def store_data(table,df,if_exist='append'):
-    if(production):
-        quoted = urllib.parse.quote_plus(connection_string)
-    else:
-        quoted = urllib.parse.quote_plus(connection_string_local)
-    engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
-    df.drop_duplicates(inplace=True)
-    df.sort_values(by='ID',inplace=True)
-    df=df.set_index('ID')
-    df.to_sql(table, schema='dbo', con = engine, if_exists=if_exist)
+    print("storingdata")
+    try:
+        if(production):
+            quoted = urllib.parse.quote_plus(connection_string)
+        else:
+            quoted = urllib.parse.quote_plus(connection_string_local)
+        engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
+        df.drop_duplicates(inplace=True)
+        df.sort_values(by='ID',inplace=True)
+        df=df.set_index('ID')
+        df.to_sql(table, schema='dbo', con = engine, if_exists=if_exist)
+    except Exception as e:
+        return e
 
 
 def pull_data():
@@ -86,6 +91,16 @@ def module_allocation(x):
             return "Other"
     else:
         return None
+def getDataFromRecommnedations():
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    df=pd.read_sql(RECOMMENDED_TICKETS,connection)
+    connection.close()
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    #print(df.head())
+    return df
 
 def pull_data_bydate(startDate,endDate):
     if(production):
@@ -133,7 +148,8 @@ def get_ticket_byId(id):
     else:
         connection=pyodbc.connect(connection_string_local)
     #df=pd.read_sql(latestquery+"where Id="+str(id),connection)
-    df=pd.read_sql("SELECT * from RecommendationsData where Id="+str(id),connection)
+    recomquery=RECOMMENDED_TICKETS+" where Id="+str(id)
+    df=pd.read_sql(recomquery,connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     df=format_response(df,'notrecommend')
@@ -177,7 +193,7 @@ def format_response(final_df,type='recommended'):
     #res=final_df
     return res
 
-def latest_defect(search='%'):
+def latest_defect():
     if(production):
         connection=pyodbc.connect(connection_string)
     else:
@@ -188,20 +204,25 @@ def latest_defect(search='%'):
     #print(df.head())
     return df
 
-def paginated_tickets(pagesize,sortCol,sortDir,search,startpage):
+def paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc):
     if(production):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    pagequery="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where Title like '%"+search+"%') As TicketRows  WHERE ([index] >("+str(startpage)+") AND [index]<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
-    searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where Title like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
+    if(bydesc==False):
+        searchby='Recommended'
+    else:
+        searchby='Title'
+    pagequery="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows  WHERE ([index] >("+str(startpage)+") AND [index]<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
+    searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
     pagequery=searchquery if search!='%' else pagequery
     df=pd.read_sql(pagequery,connection)
-    count_query="Select count(*) from RecommendationsData where Title like '%"+search+"%'"
-    #print(query)
+    count_query="Select count(*) from RecommendationsData where "+ searchby +" like '%"+search+"%'"
+    print(pagequery)
     count=pd.read_sql(count_query,connection)
     df1=df.copy()
     formated_df=format_response(df,type='recommended')
+    #print(formated_df.head())
     return formated_df,count,df1
 
 dataframe=pull_data()

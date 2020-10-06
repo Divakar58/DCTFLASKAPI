@@ -25,6 +25,8 @@ import xgboost
 import re
 import pickle
 #from prediction import modelling
+import xgboost as xgb
+from xgboost import XGBClassifier
 from get_data import dataframe,get_current_developers
 from sklearn.metrics import classification_report,accuracy_score
 
@@ -110,17 +112,18 @@ def current_developer(dataframe,current_developers):
 
 def modelling(dataframe):
     print("modelling")
-    X=dataframe['Title']
+    X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
     y=dataframe['Developer']
     #X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0,random_state=42)
     tcv=CountVectorizer(analyzer=text_process)
     tfv=TfidfTransformer()
     sm=SMOTE(k_neighbors=1,n_jobs=-1)#k_neighbors=3,
     svc=SVC(kernel='rbf',probability=True)
-    mb=MultinomialNB()
+    #mb=MultinomialNB()
     rfc=RandomForestClassifier()
-    xgb=xgboost()
-    pipe=make_pipeline(tcv,tfv,sm,xgb)
+    #xgb=xgboost()
+    print("before pipe")
+    pipe=make_pipeline(tcv,tfv,sm,rfc)
     #pipe=make_pipeline(tcv,tfv,mb)
     #pipe.fit(X=X_train,y=y_train)
     pipe.fit(X,y)
@@ -142,7 +145,8 @@ def evaluation(dataframe):
     svc=SVC(kernel='rbf',probability=True)
     rfc=RandomForestClassifier()
     #mb=MultinomialNB()
-    pipe=make_pipeline(tcv,tfv,sm,rfc)
+    xgc=XGBClassifier()
+    pipe=make_pipeline(tcv,tfv,sm,xgc)
     #pipe=make_pipeline(tcv,tfv,mb)
     pipe.fit(X=X_train,y=y_train)
     y_predict=pipe.predict(X_test)
@@ -155,6 +159,7 @@ def run_model(dataframe):
     try:
         dataframe=missing_values_treatment(dataframe)
     except Exception as e:
+        print(e)
         return {"message":e} 
     current_dataframe=current_developer(dataframe,current_developers)
     model=modelling(current_dataframe)

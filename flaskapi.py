@@ -94,19 +94,50 @@ def visualize():
     #print(visualdataframe.head(50))
     line={}
     visualdataframe.sort_values(by='Developer',ascending=True,inplace=True)
-    line['labels']=list(visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().index.values)
-    line['values']=list(map(int,visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().values))
+    print(current_developers)
+    #line['labels']=list(visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().index.values)
+    #line['values']=list(map(int,visualdataframe['Developer'][visualdataframe['Developer'].isin(current_developers)].value_counts().values))
     devvisualdf=visualdataframe[visualdataframe['Developer'].isin(current_developers)]
-    devvisualdf=pd.DataFrame(devvisualdf.groupby(['Developer','Severity']).count()['ID']).reset_index()
     devvisualdf.sort_values(by='Developer',ascending=True,inplace=True)
+    line['labels']=list(devvisualdf['Developer'].value_counts().index.values)
+    line['values']=list(map(int,devvisualdf['Developer'].value_counts().values))
+    devvisualdf=pd.DataFrame(devvisualdf.groupby(['Developer','Severity']).count()['ID']).reset_index()
+    #devvisualdf.sort_values(by='Developer',ascending=True,inplace=True)
     devvisualdf['List']=devvisualdf[['Severity','ID']].apply(formatseveritylist,axis=1)
     devp=[]
     sevl=[]
-    for i in sorted(current_developers):
+    for i in line['labels']:
         devp.append(i)
         sevl.append(list(devvisualdf[devvisualdf['Developer']==i]['List'].values))
     line['drilllabels']=devp
     line['drillvalues']=sevl
+    hrslbl=[]
+    devhrs=[]
+    hrs=[]
+    for i in range(len(devp)):
+        dev=[]
+        hrssum=0
+        for j in range(len(sevl[i])):
+            if(sevl[i][j][0]=="1 - Low"):
+                dev.append([sevl[i][j][0],sevl[i][j][1]*4])
+                hrssum+=sevl[i][j][1]*4
+            elif(sevl[i][j][0]=="2 - Medium"):
+                dev.append([sevl[i][j][0],sevl[i][j][1]*8])
+                hrssum+=sevl[i][j][1]*8
+            elif(sevl[i][j][0]=="3 - High"):
+                dev.append([sevl[i][j][0],sevl[i][j][1]*16])
+                hrssum+=sevl[i][j][1]*16
+            elif(sevl[i][j][0]=="4 - Critical"):
+                dev.append([sevl[i][j][0],sevl[i][j][1]*16])
+                hrssum+=sevl[i][j][1]*16
+        devhrs.append(dev)
+        hrs.append(hrssum)
+        hrslbl.append(devp[i])
+    line['hrsdrilllabels']=hrslbl
+    line['hrsdrillvalues']=devhrs
+    line['hrlabels']=hrslbl
+    line['hrvalues']=hrs
+    
     bar={}
     bar['labels']=list(visualdataframe['Application'].value_counts().index)
     bar['values']=list(map(int,visualdataframe['Application'].value_counts().values))
@@ -156,7 +187,7 @@ def visualize():
     defectsdata['labels']=list(df['Module'].value_counts().index)
     defectsdata['values']=list(map(int,df['Module'].value_counts().values))
     #print(defectsdata)
-    return {"line_data":{"labels":line['labels'],"values":line['values'],"drilllabels":line['drilllabels'],"drillvalues":line['drillvalues']},
+    return {"line_data":{"labels":line['labels'],"values":line['values'],"hrlabels":line['hrlabels'],"hrvalues":line['hrvalues'],"drilllabels":line['drilllabels'],"drillvalues":line['drillvalues'],"hrsdrilllabels":line['hrsdrilllabels'],"hrsdrillvalues":line['hrsdrillvalues']},
     "bar_data":{"labels":labels,"values":values},
     "defectschart_data":{"labels":defectschart['labels'],"values":defectschart['values']},
     "pie_data":{"labels":pie['labels'],"values":pie['values'],"drilllabels":pie['drilllabels'],"drillvalues":pie['drillvalues']},
@@ -172,11 +203,16 @@ def predict():
     sortCol=request.args.get('sort_col',default='ID',type=str)
     sortDir=request.args.get('sort_dir',default='asc',type=str)
     search=request.args.get('search',default='%',type=str)
+    bydesc=request.args.get('bydesc',default='true',type=str)
+    if(bydesc=='false'):
+        bydesc=False
+    else:
+        bydesc=True
     startpage=int(pagesize)*(start-1)
     if search=='':
         search='%'
     #print("pagesize:",pagesize,"startpage:",startpage,"sortcol:",sortCol,"sortDir",sortDir,"search:",search)
-    res,ticketscount,df=paginated_tickets(pagesize,sortCol,sortDir,search,startpage)
+    res,ticketscount,df=paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc)
     global ticketMail
     ticketMail=df[['ID','Title','Recommended','Developer1','Developer2','Developer3']]
     ticketMail.columns=['ID','Ticket Description','Assigned','Developer1','Developer2','Developer3']
@@ -215,14 +251,18 @@ def predict():
 @app.route('/recommendations',methods=['POST','GET'])
 def view():
     ticketdata=latest_defect()
-    # print("Before Prediction")
+    print("Before Prediction in recommendations")
     global tickets
     tickets=len(ticketdata.index)
     result=prediction(ticketdata)
     #prediction(ticketdata)
-    # print("After Prediction")
-    
-    return {"results":result},200 if result=="sucess" else 500 
+    print("After Prediction")
+    print(result)
+    if(result=="sucess"):
+        return {'message':'success'}
+    else:
+        return {'message':'error'}
+    #return {"results":result},200 if result=="sucess" else 500 
 
 ###########################  ----- Update ----#####################
 @app.route('/update',methods=['POST','GET'])
@@ -267,27 +307,30 @@ def similardefects():
     pagesize=request.args.get('pagesize',default=5,type=int)
     start=request.args.get('page',default=1,type=int)
     sortCol=request.args.get('sort_col',default='similarityscore',type=str)
+    similarscore=int(request.args.get('similarscore',default=50,type=int))
     if(sortCol=='Id'):
         sortCol='ID'
     sortDir=request.args.get('sort_dir',default='asc',type=str)
     search=request.args.get('search',default='',type=str)
+    print(search)
     if(search==''):
         print('no results')
         return {'results':[{'id':list(),'title':list(),'similarityscore':list()}],'pageSize':0}
     startpage=int(pagesize)*(start-1)
-    #dataframe=pull_data()
+    dataframe=pull_data()
     dataframe['similarityscore']=dataframe['Title'].apply(lambda x:fuzz.token_sort_ratio(x,search))
+    print(dataframe.head(20))
     dataframe.sort_values(by='similarityscore',ascending=False,inplace=True)
     #print(SIMILARITY_PERCENT)
-    data=dataframe[dataframe['similarityscore']>SIMILARITY_PERCENT].copy()
-    if(sortDir=='asc'):
-        data.sort_values(by=sortCol,inplace=True)
-    else:
-        data.sort_values(by=sortCol,ascending=False,inplace=True)
+    data=dataframe[dataframe['similarityscore']>similarscore].copy()
     count=len(data.index)
     #print("print dataframe")
     #data=data.iloc[:,[0,1,8]]
     data=data.iloc[startpage:startpage+pagesize]
+    if(sortDir=='asc'):
+        data.sort_values(by=sortCol,inplace=True)
+    else:
+        data.sort_values(by=sortCol,ascending=False,inplace=True)   
     #print(data)
     results=[]
     for i,j,k in zip(data['ID'],data['Title'],data['similarityscore']):
@@ -315,7 +358,10 @@ def currentDevelp():
 @app.route('/runmodel',methods=['POST','GET'])
 def runmodel():
     data=request.get_json()
+    dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+    result=run_model(dataframe)
     try:
+        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
         result=run_model(dataframe)
     except Exception as e:
         print(e)
@@ -381,39 +427,72 @@ def sendmail():
 @app.route("/UploadFile", methods=["GET", "POST","PUT"])
 def uploadFile():
     project=request.args.get('project',default='',type=str)
+    New=request.args.get('New',default='',type=str)
+    if(New=='false'):
+        New=False
+    elif(New=='true'):
+        New=True
     #file=request.args.get('File',default='',type=str)
     #print(request)
-    print(project)
     if request.method == "POST" or request.method == "PUT":
         if request.files:
             file = request.files["File"]            
             file.save(file.filename)
             df=pd.DataFrame({})
-            #try:
-            if('.xlsx' in file.filename or '.xls' in file.filename):
-                df=pd.read_excel(file.filename)
-                df_old=pull_data()
-                df=pd.concat([df_old,df])
-                df['Project_Id']=project
-                df.drop_duplicates(inplace=True)
-                #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','Created Date','Root Cause','Project_Id']
-                os.remove(file.filename)
-                df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.strftime("%Y-%m-%d")
-                store_data('TicketHistory',df,'replace')
-            elif('.csv' in file.filename):
-                print(file.filename)
-                df=pd.read_csv(file.filename)
-                df_old=pull_data()
-                df=pd.concat([df_old,df])
-                df['Project_Id']=project
-                df.drop_duplicates(inplace=True)
-                os.remove(file.filename)
-                #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','Created Date','Root Cause','Project_Id']                    
-                #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.strftime("%Y-%m-%d")
-                store_data('TicketHistory',df,'replace')
-            #except Exception as e:
-                #print(e)
-            #return {'results':'failed to store in database because of '+str(e)}
+            try:
+                if(New):
+                    if('.xlsx' in file.filename or '.xls' in file.filename):
+                        df=pd.read_excel(file.filename)
+                        df_old=latest_defect()
+                        df=pd.concat([df_old,df])
+                        df['Project_Id']=project
+                        df.drop_duplicates(inplace=True)
+                        #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']
+                        os.remove(file.filename)
+                        df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                        #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                        store_data('TFSTicketsData',df,'replace')
+                        prediction(latest_defect())
+                    elif('.csv' in file.filename):
+                        print(file.filename)
+                        df=pd.read_csv(file.filename)
+                        df_old=latest_defect()
+                        df=pd.concat([df_old,df])
+                        df['Project_Id']=project
+                        df.drop_duplicates(inplace=True)
+                        os.remove(file.filename)
+                        #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']                    
+                        df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                        #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                        store_data('TFSTicketsData',df,'replace')
+                        prediction(latest_defect())
+                else:
+                    if('.xlsx' in file.filename or '.xls' in file.filename):
+                        df=pd.read_excel(file.filename)
+                        df_old=pull_data()
+                        df=pd.concat([df_old,df])
+                        df['Project_Id']=project
+                        df.drop_duplicates(inplace=True)
+                        #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']
+                        os.remove(file.filename)
+                        df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                        #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                        store_data('TicketHistory',df,'replace')
+                    elif('.csv' in file.filename):
+                        print(file.filename)
+                        df=pd.read_csv(file.filename)
+                        df_old=pull_data()
+                        df=pd.concat([df_old,df])
+                        df['Project_Id']=project
+                        df.drop_duplicates(inplace=True)
+                        os.remove(file.filename)
+                        #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']
+                        df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                        #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                        store_data('TicketHistory',df,'replace')
+            except Exception as e:
+                print(e)
+                return {'results':'failed to store in database because of '+str(e)}
         else:
             return {'results':'error'}                                       
     return {'results':'success'}
