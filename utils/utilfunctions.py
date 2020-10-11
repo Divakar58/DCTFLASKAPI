@@ -94,3 +94,30 @@ def seggregation(a):
             return pd.Series(['Other','Other'],index=['Seggregation','Application'])
     else:
         return pd.Series(['Other','Other'],index=['Seggregation','Application'])
+
+def Estimation(a):
+    sev,est=a
+    if(est is None):
+        if(sev=='1 - Low'):
+            return 'Simple'
+        if(sev=='2 - Medium'):
+            return 'Medium'
+        if(sev=='3 - High'):
+            return 'Complex'
+        if(sev=='4 - Critical'):
+            return 'Complicated'
+    elif(est is not None):
+        if(est<=8):
+            return "Simple"
+        elif(est>8 and est<=16):
+            return "Medium"
+        elif(est>16 and est<=24):
+            return "Complex"
+        elif(est>24):
+            return "Complicated"
+
+def missing_values_treatment(dataframe):
+    dataframe['Developer'][dataframe['Developer'].isna()]='No Developer'
+    dataframe['Severity'][dataframe['Severity'].isna()]='2 - Medium'
+    dataframe['Estimate'][dataframe['Estimate'].isna()]=None
+    return dataframe

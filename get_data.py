@@ -57,7 +57,18 @@ def pull_data():
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    tickethistoryquery=query+"and project_Id=1"
+    tickethistoryquery=query
+    df=pd.read_sql(tickethistoryquery,connection)
+    connection.close()
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return df
+
+def pull_data_byprojectId(projectid):
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    tickethistoryquery=query+"and project_Id="+str(projectid)
     df=pd.read_sql(tickethistoryquery,connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
@@ -189,7 +200,7 @@ def format_response(final_df,type='recommended'):
         final_df['Developers']=final_df[['Developer1','Developer2','Developer3']].apply(test,axis=1)
     #final_df['Developers']=list(final_df['Recommended'],final_df['Developer1'],final_df['Developer2'],final_df['Developer3'])
     final_df['Recommended']=final_df[['Recommended']].apply(test,axis=1)
-    res=final_df[['Title','Developers','ID','Recommended']].apply(test,axis=1)
+    res=final_df[['Title','Developers','ID','Recommended','Estimate']].apply(test,axis=1)
     #res=final_df
     return res
 
@@ -213,8 +224,8 @@ def paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc):
         searchby='Recommended'
     else:
         searchby='Title'
-    pagequery="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows  WHERE ([index] >("+str(startpage)+") AND [index]<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
-    searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
+    pagequery="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended,Estimate as Estimate from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows  WHERE ([index] >="+str(startpage)+" AND [index]<= "+str(startpage+pagesize-1)+") ORDER BY "+sortCol+" "+sortDir+";"
+    searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended,Estimate as Estimate from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
     pagequery=searchquery if search!='%' else pagequery
     df=pd.read_sql(pagequery,connection)
     count_query="Select count(*) from RecommendationsData where "+ searchby +" like '%"+search+"%'"

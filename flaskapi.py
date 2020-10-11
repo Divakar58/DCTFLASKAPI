@@ -5,13 +5,13 @@ import pandas as pd
 import pyodbc
 import pandas.io.sql as psql
 from model import current_developers
-from get_data import dataframe,latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data,getticket_databyId
+from get_data import latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data,getticket_databyId,pull_data_byprojectId
 from flask_cors import CORS
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from model import run_model,missing_values_treatment,evaluation
-from utils.utilfunctions import seggregation,formatseveritylist
+from model import run_model,devevaluation,estevaluation
+from utils.utilfunctions import seggregation,formatseveritylist,missing_values_treatment
 import json
 from fuzzywuzzy import fuzz
 from datetime import datetime
@@ -214,8 +214,8 @@ def predict():
     #print("pagesize:",pagesize,"startpage:",startpage,"sortcol:",sortCol,"sortDir",sortDir,"search:",search)
     res,ticketscount,df=paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc)
     global ticketMail
-    ticketMail=df[['ID','Title','Recommended','Developer1','Developer2','Developer3']]
-    ticketMail.columns=['ID','Ticket Description','Assigned','Developer1','Developer2','Developer3']
+    ticketMail=df[['ID','Title','Recommended','Developer1','Developer2','Developer3','Estimate']]
+    ticketMail.columns=['ID','Ticket Description','Assigned','Developer1','Developer2','Developer3','Estimate']
     #print(res)
     # if sortDir=='asc':
     #     sortDir=True
@@ -358,29 +358,33 @@ def currentDevelp():
 @app.route('/runmodel',methods=['POST','GET'])
 def runmodel():
     data=request.get_json()
-    dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
-    result=run_model(dataframe)
+    projectid=request.args.get('projectid',default='',type=int)
+    dataframe=pull_data_byprojectId(projectid)
+    print(len(dataframe.index))
     try:
-        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
         result=run_model(dataframe)
     except Exception as e:
         print(e)
-        return {"model": "failed"},500
+        return {"results": "failed"},500
     else:
         #print("")
-        return {"model":"Ran successfully"},200
+        return {"results":"success"},200
     #return Response({"model":"Ran successfully"},200,mimetype='application/json')
 
 @app.route('/evaluation',methods=['POST','GET'])
 def evaluation1():
-    #data=request.get_json()
+    projectid=request.args.get('projectid',default='',type=int)
+    dataframe=pull_data_byprojectId(projectid)
+    print(dataframe.head())
     try:
-        result=evaluation(dataframe)
+        result1=devevaluation(dataframe)
+        result2=estevaluation(dataframe)
+        print([result1,result2])
     except Exception as e:
         print(e)
-        return {"model": "failed"},500
+        return {"results": "failed"},500
     else:
-        return {"model":result},200
+        return {"results":[result1,result2]},200
 
 
 @app.route('/sendmail',methods=['POST','GET'])

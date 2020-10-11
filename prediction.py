@@ -14,6 +14,7 @@ import pandas as pd
 import pickle
 from get_data import store_data,getDataFromRecommnedations
 from datetime import date
+from utils.utilfunctions import missing_values_treatment,Estimation,seggregation
 
 current_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
                             'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
@@ -42,8 +43,9 @@ def load_model():
     # with open(r'./TFSmodel.pickle','rb') as pickle_file:
     #     model=pickle.load(pickle_file)
     print("Loading pickle file")
-    model = pickle.load(open('model.pkl','rb'))
-    return model
+    devmodel = pickle.load(open('devmodel.pkl','rb'))
+    estmodel = pickle.load(open('estmodel.pkl','rb'))
+    return devmodel,estmodel
 
 
 
@@ -73,16 +75,22 @@ def prediction(latest_defect):
     #print(latest_defect)
     #df=pd.DataFrame(latest_defect,index=range(len(latest_defect)))
     df=latest_defect
-    X_test=df['Title']
+    latest_defect=missing_values_treatment(latest_defect)
+    
+    latest_defect[['Seggregation','Application']]=pd.DataFrame(latest_defect[['Title','Module']].apply(seggregation,axis=1))
+    latest_defect['Complexcity']=pd.DataFrame(latest_defect[['Severity','Estimate']].apply(Estimation,axis=1))
+    X_test=latest_defect['Title']+' '+latest_defect['Application']+' '+latest_defect['Seggregation']
     #print(X_test)
-    model=load_model()
+    devmodel,estmodel=load_model()
     print("pickle file Loaded")
-    final_df=pd.DataFrame(100*(model.predict_proba(X_test).round(4)),columns=model.classes_,index=X_test.index)
+    final_df=pd.DataFrame(100*(devmodel.predict_proba(X_test).round(4)),columns=devmodel.classes_,index=X_test.index)
     #final_df['Recommended Developer']=final_df.apply(recommended_developer,axis=1)
     final_df['Developers']=final_df.apply(recommendation_list,axis=1)
     # final_df=pd.DataFrame(model.predict_proba(X_test),columns=model.classes_,index=X_test.index)
     # final_df['Recommended Developer']=final_df.apply(recommended_developer,axis=1)
-    final_df['Title']=X_test
+    complexcity=pd.DataFrame(100*(estmodel.predict_proba(X_test).round(4)),columns=estmodel.classes_,index=X_test.index)
+    final_df['Estimate']=round((complexcity['Simple']/100)*8+(complexcity['Medium']/100)*16+(complexcity['Complex']/100)*24+(complexcity['Complicated']/100)*32)
+    final_df['Title']=latest_defect['Title']
     final_df['ID']=df['ID'].apply(lambda x:int(x))
     #final_df.to_csv('test.csv')
     #print(final_df[['Title','Recommended Developer List']].T.to_json())
@@ -99,7 +107,7 @@ def prediction(latest_defect):
     #final_df['Devel']=final_df['Developers'].str
     final_df.reset_index(inplace=True)
     final_df.sort_values(by='index',inplace=True,ascending=True)
-    final_df[['index','Date','Title','Developer1','Developer2','Developer3','ID','Recommended']].to_csv('data.csv')
+    final_df[['index','Date','Title','Developer1','Developer2','Developer3','ID','Recommended','Estimate']].to_csv('data.csv')
     df_old=pd.DataFrame({})
     df_old=getDataFromRecommnedations()
     final_data=pd.read_csv('data.csv')
@@ -107,7 +115,7 @@ def prediction(latest_defect):
     final_df1.drop_duplicates(inplace=True)
     print(final_df1.head())
     try:
-        store_data('RecommendationsData',final_df1[['index','Date','Title','Developer1','Developer2','Developer3','ID','Recommended']],'replace')
+        store_data('RecommendationsData',final_df1[['index','Date','Title','Developer1','Developer2','Developer3','ID','Recommended','Estimate']],'replace')
     except Exception as e:
         print("Exception")
         return str(e)

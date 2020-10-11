@@ -29,6 +29,7 @@ import xgboost as xgb
 from xgboost import XGBClassifier
 from get_data import dataframe,get_current_developers
 from sklearn.metrics import classification_report,accuracy_score
+from utils.utilfunctions import seggregation,Estimation,missing_values_treatment
 
 
 # list_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
@@ -48,9 +49,11 @@ def load_data(file):
     else:
         return "invalid file format send in csv or xlsx format"
 
-def missing_values_treatment(dataframe):
-    dataframe['Developer'][dataframe['Developer'].isna()]='No Developer'
-    return dataframe
+# def missing_values_treatment(dataframe):
+#     dataframe['Developer'][dataframe['Developer'].isna()]='No Developer'
+#     dataframe['Severity'][dataframe['Severity'].isna()]='2 - Medium'
+#     dataframe['Estimate'][dataframe['Estimate'].isna()]=None
+#     return dataframe
 
 def get_current_developer():
     return current_developer
@@ -59,59 +62,8 @@ def current_developer(dataframe,current_developers):
     return dataframe[dataframe['Developer'].isin(current_developers)]
     #return dataframe.head(500)
 
-# def seggregation(a):
-#     x,y=a
-#     if(y is not None and x is not None):
-#         if 'policy' in y.lower():
-#             if 'transact' in x.lower():
-#                 return pd.Series(['TransACT','Policy'],index=['Seggregation','Application'])
-#             elif 'applicant' in x.lower():
-#                 return pd.Series(['Account','Policy'],index=['Seggregation','Application'])
-#             elif 'skins' in x.lower() or 'align' in x.lower() or 'javascript' in x.lower() or 'ajax' in x.lower():
-#                 return pd.Series(['Skins','Policy'],index=['Seggregation','Application'])
-#             elif 'premium' in x.lower() or 'pric' in x.lower():
-#                 return pd.Series(['Rating','Policy'],index=['Seggregation','Application'])
-#             elif 'privilege' in x.lower() or 'useradmin' in x.lower() or 'roles' in x.lower() or 'entity' in x.lower():
-#                 return pd.Series(['UserAdmin','Policy'],index=['Seggregation','Application'])
-#             elif 'risk' in x.lower():
-#                 return pd.Series(['Risk','Policy'],index=['Seggregation','Application'])
-#             elif 'form' in x.lower() or 'doc' in x.lower():
-#                 return pd.Series(['Forms','Policy'],index=['Seggregation','Application'])
-#             elif 'search' in x.lower():
-#                 return pd.Series(['Search','Policy'],index=['Seggregation','Application'])
-#             elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
-#                 return pd.Series(['Party','Policy'],index=['Seggregation','Application'])
-#             else:
-#                 return pd.Series(['PolicyOther','Policy'],index=['Seggregation','Application'])
-#         elif 'billing' in y.lower():
-#             if 'invoice' in x.lower():
-#                 return pd.Series(['Invoice','Billing'],index=['Seggregation','Application'])
-#             elif 'disbursement' in x.lower():
-#                 return pd.Series(['Disbursement','Billing'],index=['Seggregation','Application'])
-#             elif 'payment' in x.lower():
-#                 return pd.Series(['Payment','Billing'],index=['Seggregation','Application'])
-#             elif 'schedule' in x.lower():
-#                 return pd.Series(['ScheduleActivity','Billing'],index=['Seggregation','Application'])
-#             elif 'party' in y.lower() or 'ofac' in y.lower() or 'geo' in y.lower():
-#                 return pd.Series(['Party','Billing'],index=['Seggregation','Application'])
-#             else:
-#                 return pd.Series(['BillingOther','Billing'],index=['Seggregation','Application'])
-#         elif 'claims' in y.lower():
-#             if 'party' in x.lower() or 'ofac' in x.lower() or 'geo' in x.lower():
-#                 return pd.Series(['Party','Claims'],index=['Seggregation','Application'])
-#             elif 'coverage' in x.lower():
-#                 return pd.Series(['CoverageMatch','Claims'],index=['Seggregation','Application'])
-#             elif 'attach' in x.lower():
-#                 return pd.Series(['AttachPolicy','Claims'],index=['Seggregation','Application'])
-#             else:
-#                 return pd.Series(['ClaimsOther','Claims'],index=['Seggregation','Application'])
-#         else:
-#             return pd.Series(['Other','Other'],index=['Seggregation','Application'])
-#     else:
-#         return pd.Series(['NULL','NULL'],index=['Seggregation','Application'])
-
-def modelling(dataframe):
-    print("modelling")
+def devmodelling(dataframe):
+    print("Developer modelling")
     X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
     y=dataframe['Developer']
     #X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0,random_state=42)
@@ -128,15 +80,37 @@ def modelling(dataframe):
     #pipe.fit(X=X_train,y=y_train)
     pipe.fit(X,y)
     return pipe
+def estmodelling(dataframe):
+    print("Estimate modelling")
+    X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
+    y=dataframe['Complexcity']
+    #X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0,random_state=42)
+    tcv=CountVectorizer(analyzer=text_process)
+    tfv=TfidfTransformer()
+    sm=SMOTE(k_neighbors=1,n_jobs=-1)#k_neighbors=3,
+    svc=SVC(kernel='rbf',probability=True)
+    #mb=MultinomialNB()
+    rfc=RandomForestClassifier()
+    #xgb=xgboost()
+    print("before pipe")
+    pipe=make_pipeline(tcv,tfv,sm,rfc)
+    #pipe=make_pipeline(tcv,tfv,mb)
+    #pipe.fit(X=X_train,y=y_train)
+    pipe.fit(X,y)
+    return pipe
 
-def evaluation(dataframe):
+def devevaluation(dataframe):
     print("evaluation")
     try:
         dataframe=missing_values_treatment(dataframe)
+        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+        dataframe['Complexcity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
     except Exception as e:
+        print(e)
+        raise Exception 
         return {"message":"error"} 
     dataframe=current_developer(dataframe,current_developers)
-    X=dataframe['Title']
+    X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
     y=dataframe['Developer']
     X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
     tcv=CountVectorizer(analyzer=text_process)
@@ -152,19 +126,48 @@ def evaluation(dataframe):
     y_predict=pipe.predict(X_test)
     print(classification_report(y_test,y_predict))
     print("Accuracy",accuracy_score(y_test,y_predict))
-    return accuracy_score(y_test,y_predict)
-
+    return round(accuracy_score(y_test,y_predict)*100,2)
+def estevaluation(dataframe):
+    print("evaluation")
+    try:
+        dataframe=missing_values_treatment(dataframe)
+        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+        dataframe['Complexcity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+    except Exception as e:
+        return {"message":"error"} 
+    dataframe=current_developer(dataframe,current_developers)
+    X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
+    y=dataframe['Complexcity']
+    X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
+    tcv=CountVectorizer(analyzer=text_process)
+    tfv=TfidfTransformer()
+    sm=SMOTE(k_neighbors=1,n_jobs=-1)
+    svc=SVC(kernel='rbf',probability=True)
+    rfc=RandomForestClassifier()
+    #mb=MultinomialNB()
+    xgc=XGBClassifier()
+    pipe=make_pipeline(tcv,tfv,sm,xgc)
+    #pipe=make_pipeline(tcv,tfv,mb)
+    pipe.fit(X=X_train,y=y_train)
+    y_predict=pipe.predict(X_test)
+    print(classification_report(y_test,y_predict))
+    print("Accuracy",accuracy_score(y_test,y_predict))
+    return round(accuracy_score(y_test,y_predict)*100,2)
 
 def run_model(dataframe):
     try:
         dataframe=missing_values_treatment(dataframe)
+        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+        dataframe['Complexcity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
     except Exception as e:
         print(e)
         return {"message":e} 
     current_dataframe=current_developer(dataframe,current_developers)
-    model=modelling(current_dataframe)
-    # print("Model Generated as pickle file")
-    pickle.dump(model,open('model.pkl', 'wb'))
+    devmodel=devmodelling(current_dataframe)
+    estmodel=estmodelling(current_dataframe)
+    print("Model Generated as pickle file")
+    pickle.dump(devmodel,open('devmodel.pkl', 'wb'))
+    pickle.dump(estmodel,open('estmodel.pkl', 'wb'))
     #return model
     return {"message": "Model ran successfull"},200
 
