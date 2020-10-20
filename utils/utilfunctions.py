@@ -21,18 +21,18 @@ def seggregation(a):
                 return pd.Series(['Rating','Policy'],index=['Seggregation','Application'])
             elif 'privilege' in x.lower() or 'useradmin' in x.lower() or 'roles' in x.lower() or 'entity' in x.lower():
                 return pd.Series(['UserAdmin','Policy'],index=['Seggregation','Application'])
-            elif 'risk' in x.lower():
+            elif 'risk' in x.lower() or 'line' in x.lower():
                 return pd.Series(['Risk','Policy'],index=['Seggregation','Application'])
             elif 'form' in x.lower() or 'doc' in x.lower():
                 return pd.Series(['Forms','Policy'],index=['Seggregation','Application'])
             elif 'search' in x.lower():
                 return pd.Series(['Search','Policy'],index=['Seggregation','Application'])
             elif 'rate' in x.lower() and 'table' in x.lower():
-                return pd.Series(['Rate Table','Policy'],index=['Seggregation','Application'])
-            elif 'shred' in x.lower():
+                return pd.Series(['RateTable','Policy'],index=['Seggregation','Application'])
+            elif 'shred' in x.lower() and 'policy' in y.lower():
                 return pd.Series(['Shred','Policy'],index=['Seggregation','Application'])
-            elif 'party' in y.lower() or 'ofac' in x.lower() or 'geo' in x.lower():
-                return pd.Series(['Integration','Party'],index=['Seggregation','Application'])
+            elif 'party' in y.lower() or 'ofac' in x.lower() or 'geo' in x.lower() or 'pitney' in x.lower():
+                return pd.Series(['Integrations','Party'],index=['Seggregation','Application'])
             elif 'stp' in y.lower() or 'stp' in x.lower():
                 return pd.Series(['STP','Policy'],index=['Seggregation','Application'])
             else:
@@ -44,33 +44,51 @@ def seggregation(a):
                 return pd.Series(['Disbursement','Billing'],index=['Seggregation','Application'])
             elif 'payment' in x.lower() or 'transfer' in x.lower():
                 return pd.Series(['Payment','Billing'],index=['Seggregation','Application'])
+            elif 'shred' in x.lower() and 'billing' in y.lower():
+                return pd.Series(['Shred','Billing'],index=['Seggregation','Application'])
             elif 'schedule' in x.lower():
                 return pd.Series(['ScheduleActivity','Billing'],index=['Seggregation','Application'])
             elif 'commission' in x.lower():
                 return pd.Series(['Commission','Billing'],index=['Seggregation','Application'])
-            elif 'pcn' in x.lower() or 'pcn' in x.lower():
+            elif 'pcn' in x.lower() and 'billing' in x.lower():
                 return pd.Series(['PCN','Billing'],index=['Seggregation','Application'])
             elif 'receivable' in x.lower():
                 return pd.Series(['Receivable','Billing'],index=['Seggregation','Application'])
-            elif 'shred' in x.lower():
-                return pd.Series(['Shred','Billing'],index=['Seggregation','Application'])
-            elif 'user admin' in x.lower():
+            elif 'user admin' in x.lower() or 'access' in x.lower():
                 return pd.Series(['UserAdmin','Policy'],index=['Seggregation','Application'])
             elif 'reports' in x.lower() and 'billing' in y.lower():
                 return pd.Series(['Reports','Billing'],index=['Seggregation','Application'])
             elif 'party' in x.lower() or 'ofac' in x.lower() or 'geo' in x.lower():
-                return pd.Series(['Integration','Party'],index=['Seggregation','Application'])
+                return pd.Series(['Integrations','Party'],index=['Seggregation','Application'])
             elif 'agency' in x.lower() or 'tier' in x.lower():
-                return pd.Series(['Agency Party','Party'],index=['Seggregation','Application'])
+                return pd.Series(['AgencyParty','Party'],index=['Seggregation','Application'])
             else:
                 return pd.Series(['BillingOther','Billing'],index=['Seggregation','Application'])
         elif 'claim' in y.lower() or 'claim' in x.lower():
             if 'party' in x.lower() or 'ofac' in x.lower() or 'geo' in x.lower():
-                return pd.Series(['Integration','Party'],index=['Seggregation','Application'])
+                return pd.Series(['Integrations','Party'],index=['Seggregation','Application'])
             elif 'coverage' in x.lower():
                 return pd.Series(['CoverageMatch','Claims'],index=['Seggregation','Application'])
             elif 'attach' in x.lower():
                 return pd.Series(['AttachPolicy','Claims'],index=['Seggregation','Application'])
+            elif 'fnol' in x.lower():
+                return pd.Series(['FNOL','Claims'],index=['Seggregation','Application'])
+            elif 'search' in x.lower():
+                return pd.Series(['Claims search','Claims'],index=['Seggregation','Application'])
+            elif 'event' in x.lower():
+                return pd.Series(['Event','Claims'],index=['Seggregation','Application'])
+            elif 'line' in x.lower():
+                return pd.Series(['Line','Claims'],index=['Seggregation','Application'])
+            elif 'cloning' in x.lower() or 'clone' in x.lower():
+                return pd.Series(['Cloning','Claims'],index=['Seggregation','Application'])
+            elif 'reopen' in x.lower() and 'claim' in x.lower():
+                return pd.Series(['Reopenclaims','Claims'],index=['Seggregation','Application'])
+            elif 'medicare' in x.lower():
+                return pd.Series(['Medicareclaims','Claims'],index=['Seggregation','Application'])
+            elif 'payment' in x.lower() and 'payment transfer' in x.lower():
+                return pd.Series(['claims payments','Claims'],index=['Seggregation','Application'])
+            elif 'deduct' in x.lower() and 'claim' in x.lower():
+                return pd.Series(['Deductiables','Claims'],index=['Seggregation','Application'])
             else:
                 return pd.Series(['ClaimsOther','Claims'],index=['Seggregation','Application'])
         elif 'party' in y.lower() or 'party' in x.lower():
@@ -79,15 +97,23 @@ def seggregation(a):
             elif 'role' in x.lower():
                 return pd.Series(['Role','Party'],index=['Seggregation','Application'])
             elif 'duplicate' in x.lower():
-                return pd.Series(['Duplicate Party','Party'],index=['Seggregation','Application'])
-            elif 'address' in x.lower() or 'location' in x.lower():
-                return pd.Series(['Party Location','Party'],index=['Seggregation','Application'])
+                return pd.Series(['DuplicateParty','Party'],index=['Seggregation','Application'])
+            elif 'address' in x.lower() and 'work' in x.lower():
+                return pd.Series(['Work with Address','Party'],index=['Seggregation','Application'])
+            elif 'address' in x.lower() and 'work' not in x.lower():
+                return pd.Series(['Party Address','Party'],index=['Seggregation','Application'])
+            elif '360' in x.lower() :
+                return pd.Series(['Party360','Party'],index=['Seggregation','Application'])
             elif 'add' in x.lower():
                 return pd.Series(['Add Party','Party'],index=['Seggregation','Application'])
             elif 'ssn' in x.lower() or 'npi' in x.lower() or 'ein' in x.lower():
                 return pd.Series(['Demographics','Party'],index=['Seggregation','Application'])
-            elif 'phone' in x.lower() or 'npi' in x.lower() or 'ein' in x.lower():
+            elif 'phone' in x.lower():
                 return pd.Series(['Phone Number','Party'],index=['Seggregation','Application'])
+            elif 'market' in x.lower() :
+                return pd.Series(['Marketing','Party'],index=['Seggregation','Application'])
+            elif 'risk' in x.lower() and 'manage' in x.lower():
+                return pd.Series(['RiskManagement','Party'],index=['Seggregation','Application'])
             else:
                 return pd.Series(['PartyOther','Party'],index=['Seggregation','Application'])
         else:
@@ -98,14 +124,16 @@ def seggregation(a):
 def Estimation(a):
     sev,est=a
     if(est is None):
-        if(sev=='1 - Low'):
+        if('low' in sev.lower()):
             return 'Simple'
-        if(sev=='2 - Medium'):
+        elif('medium' in sev.lower()):
             return 'Medium'
-        if(sev=='3 - High'):
+        elif('high' in sev.lower()):
             return 'Complex'
-        if(sev=='4 - Critical'):
+        elif('critical' in sev.lower()):
             return 'Complicated'
+        else:
+            print(sev,"incomplete severity")
     elif(est is not None):
         if(est<=8):
             return "Simple"
@@ -115,9 +143,13 @@ def Estimation(a):
             return "Complex"
         elif(est>24):
             return "Complicated"
+        else:
+            print(sev,"incomplete severity")
+    else:
+        print(est,sev,"incomplete")
 
 def missing_values_treatment(dataframe):
     dataframe['Developer'][dataframe['Developer'].isna()]='No Developer'
-    dataframe['Severity'][dataframe['Severity'].isna()]='2 - Medium'
+    dataframe['Severity'][dataframe['Severity'].isna()]='Medium'
     dataframe['Estimate'][dataframe['Estimate'].isna()]=None
     return dataframe

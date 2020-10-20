@@ -1,16 +1,16 @@
 from flask import Flask,request,jsonify,Response
 #from flask_restful import Resource,Api
-from prediction import prediction,test,tested
+from prediction import prediction,test,tested,estimation
 import pandas as pd
 import pyodbc
 import pandas.io.sql as psql
 from model import current_developers
-from get_data import latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data,getticket_databyId,pull_data_byprojectId
+from get_data import *#latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data,getticket_databyId,pull_data_byprojectId,pull_backlg_data_bydate,pull_settings,insert_settings,update_settings
 from flask_cors import CORS
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from model import run_model,devevaluation,estevaluation
+from model import run_model,devevaluation,estevaluation,devevaluationagr,estevaluationagr
 from utils.utilfunctions import seggregation,formatseveritylist,missing_values_treatment
 import json
 from fuzzywuzzy import fuzz
@@ -18,6 +18,8 @@ from datetime import datetime
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 from sendgrid.helpers.mail import *
+import json
+
 
 load_dotenv()
 
@@ -79,18 +81,30 @@ def visualize():
     startDate=request.args.get('startDate',default='',type=str)
     endDate=request.args.get('endDate',default='',type=str)
     #print("startDate",startDate)
+    print("before getting DB data")
     if(startDate):
         if(endDate):
+            print("Using start and end")
             visualdataframe,vis=pull_data_bydate(startDate,endDate)
+            bcklgdf,vi=pull_backlg_data_bydate(startDate,endDate)
         else:
+            print("Using start")
             visualdataframe,vis=pull_data_bydate(startDate,'')
+            bcklgdf,vi=pull_backlg_data_bydate(startDate,'')
     elif(endDate):
+        print("Using end")
         visualdataframe,vis=pull_data_bydate('',endDate)
+        bcklgdf,vi=pull_backlg_data_bydate('',endDate)
     else:
+        print("Using blank")
         visualdataframe,vis=pull_data_bydate('','')
-    if len(visualdataframe.index)==0:
+        bcklgdf,vi=pull_backlg_data_bydate('','')
+    if len(visualdataframe.index)==0 or len(bcklgdf.index)==0  :
         return {}
+    print("back log dataframe data")
+    print(bcklgdf.head())
     visualdataframe[['Seggregation','Application']]=pd.DataFrame(visualdataframe[['Title','Module']].apply(seggregation,axis=1))
+    bcklgdf[['Seggregation','Application']]=pd.DataFrame(bcklgdf[['Title','Module']].apply(seggregation,axis=1))
     #print(visualdataframe.head(50))
     line={}
     visualdataframe.sort_values(by='Developer',ascending=True,inplace=True)
@@ -103,6 +117,7 @@ def visualize():
     line['values']=list(map(int,devvisualdf['Developer'].value_counts().values))
     devvisualdf=pd.DataFrame(devvisualdf.groupby(['Developer','Severity']).count()['ID']).reset_index()
     #devvisualdf.sort_values(by='Developer',ascending=True,inplace=True)
+    print("visual Dataframe", devvisualdf.head())
     devvisualdf['List']=devvisualdf[['Severity','ID']].apply(formatseveritylist,axis=1)
     devp=[]
     sevl=[]
@@ -118,16 +133,16 @@ def visualize():
         dev=[]
         hrssum=0
         for j in range(len(sevl[i])):
-            if(sevl[i][j][0]=="1 - Low"):
+            if(sevl[i][j][0]=="Low"):
                 dev.append([sevl[i][j][0],sevl[i][j][1]*4])
                 hrssum+=sevl[i][j][1]*4
-            elif(sevl[i][j][0]=="2 - Medium"):
+            elif(sevl[i][j][0]=="Medium"):
                 dev.append([sevl[i][j][0],sevl[i][j][1]*8])
                 hrssum+=sevl[i][j][1]*8
-            elif(sevl[i][j][0]=="3 - High"):
+            elif(sevl[i][j][0]=="High"):
                 dev.append([sevl[i][j][0],sevl[i][j][1]*16])
                 hrssum+=sevl[i][j][1]*16
-            elif(sevl[i][j][0]=="4 - Critical"):
+            elif(sevl[i][j][0]=="Critical"):
                 dev.append([sevl[i][j][0],sevl[i][j][1]*16])
                 hrssum+=sevl[i][j][1]*16
         devhrs.append(dev)
@@ -138,6 +153,7 @@ def visualize():
     line['hrlabels']=hrslbl
     line['hrvalues']=hrs
     
+    visualdataframe=bcklgdf.copy()
     bar={}
     bar['labels']=list(visualdataframe['Application'].value_counts().index)
     bar['values']=list(map(int,visualdataframe['Application'].value_counts().values))
@@ -158,10 +174,11 @@ def visualize():
     labels['appnames']=list(pd.DataFrame(visualdataframe.groupby(['Application']).count())['ID'].index)
     values['appvalues']=list(map(str,pd.DataFrame(visualdataframe.groupby(['Application']).count())['ID'].values))
     defectschart={}
-    # dataframe['createdDate2']=dataframe['Created Date'].dt.strftime('%Y-%m')
-    # dataframe.sort_values(['createdDate2'],ascending=False,inplace=True)
-    defectschart['labels']=list(vis['createdDate2'].values)
-    defectschart['values']={"all":list(map(int,vis['All'].values)),"policy":list(map(int,vis['Policy'].values)),"billing":list(map(int,vis['Billing'].values)),"claims":list(map(int,vis['Claims'].values)),"other":list(map(int,vis['Other'].values))}
+    #bcklgdf['createdDate2']=bcklgdf['Created Date'].dt.strftime('%Y-%m')
+    #bcklgdf.sort_values(['createdDate2'],ascending=False,inplace=True)
+    print(bcklgdf['createdDate2'].values)
+    defectschart['labels']=list(vi['createdDate2'].values)
+    defectschart['values']={"all":list(map(int,vi['All'].values)),"policy":list(map(int,vi['Policy'].values)),"billing":list(map(int,vi['Billing'].values)),"claims":list(map(int,vi['Claims'].values)),"other":list(map(int,vi['Other'].values))}
 
     pie={}
     #visualdf=pd.DataFrame(visualdataframe.groupby(['Application','Severity']).sum()['Percent']).reset_index()
@@ -352,7 +369,7 @@ def ticketDetails():
 
 @app.route('/currentDevelopers',methods=['GET','POST'])
 def currentDevelp():
-    #print("current developers",current_developers)
+    print("current developers",current_developers)
     return {'results':list(current_developers)}
 
 @app.route('/runmodel',methods=['POST','GET'])
@@ -362,7 +379,7 @@ def runmodel():
     dataframe=pull_data_byprojectId(projectid)
     print(len(dataframe.index))
     try:
-        result=run_model(dataframe)
+        result=run_model(dataframe,projectid)
     except Exception as e:
         print(e)
         return {"results": "failed"},500
@@ -375,17 +392,17 @@ def runmodel():
 def evaluation1():
     projectid=request.args.get('projectid',default='',type=int)
     dataframe=pull_data_byprojectId(projectid)
-    print(dataframe.head())
     try:
-        result1=devevaluation(dataframe)
-        result2=estevaluation(dataframe)
+        #result1=devevaluation(dataframe)
+        #result2=estevaluation(dataframe)
+        result1=devevaluationagr(dataframe,projectid)
+        result2=estevaluationagr(dataframe,projectid)
         print([result1,result2])
     except Exception as e:
         print(e)
         return {"results": "failed"},500
     else:
         return {"results":[result1,result2]},200
-
 
 @app.route('/sendmail',methods=['POST','GET'])
 def sendmail():
@@ -432,6 +449,7 @@ def sendmail():
 def uploadFile():
     project=request.args.get('project',default='',type=str)
     New=request.args.get('New',default='',type=str)
+    print(json.loads(New))
     if(New=='false'):
         New=False
     elif(New=='true'):
@@ -456,7 +474,7 @@ def uploadFile():
                         df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
                         #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
                         store_data('TFSTicketsData',df,'replace')
-                        prediction(latest_defect())
+                        prediction(latest_defect(),project,store=True)
                     elif('.csv' in file.filename):
                         print(file.filename)
                         df=pd.read_csv(file.filename)
@@ -469,7 +487,7 @@ def uploadFile():
                         df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
                         #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
                         store_data('TFSTicketsData',df,'replace')
-                        prediction(latest_defect())
+                        prediction(latest_defect(),project,store=True)
                 else:
                     if('.xlsx' in file.filename or '.xls' in file.filename):
                         df=pd.read_excel(file.filename)
@@ -500,6 +518,47 @@ def uploadFile():
         else:
             return {'results':'error'}                                       
     return {'results':'success'}
+
+
+@app.route("/Estimate", methods=["GET", "POST","PUT"])
+def Estimate():
+    project=request.args.get('project',default='',type=str)
+    #file=request.args.get('File',default='',type=str)
+    #print(request)
+    if request.method == "POST" or request.method == "PUT":
+        if request.files:
+            file = request.files["File"]            
+            file.save(file.filename)
+            df=pd.DataFrame({})
+            if('.xlsx' in file.filename or '.xls' in file.filename):
+                df=pd.read_excel(file.filename)
+                # df_old=latest_defect()
+                # df=pd.concat([df_old,df])
+                # df['Project_Id']=project
+                # df.drop_duplicates(inplace=True)
+                #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']
+                os.remove(file.filename)
+                df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                #store_data('TFSTicketsData',df,'replace')
+                res=estimation(df,project)
+                return {'results':res}
+            elif('.csv' in file.filename):
+                print(file.filename)
+                df=pd.read_csv(file.filename)
+                # df_old=latest_defect()
+                # df=pd.concat([df_old,df])
+                # df['Project_Id']=project
+                # df.drop_duplicates(inplace=True)
+                os.remove(file.filename)
+                #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']                    
+                df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                #store_data('TFSTicketsData',df,'replace')
+                res=estimation(df,project)
+                return {'results':res}
+        else:
+            return {'results':'files not attached'}                                       
 
 
 if __name__ == "__main__":

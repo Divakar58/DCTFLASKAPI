@@ -7,7 +7,6 @@ import urllib
 from sqlalchemy import create_engine
 from datetime import date
 import ast
-
 load_dotenv()
 
 
@@ -24,6 +23,7 @@ CLOSED_TICKETS=os.environ.get("CLOSED_TICKETS")
 currentdevelopers=os.environ.get("CURRENT_DEVELOPERS")
 TKTS_QUERY_BYID=os.environ.get("TKTS_QUERY_BYID")
 RECOMMENDED_TICKETS=os.environ.get("RECOMMENDED_TICKETS")
+SETTINGS=os.environ.get("SETTINGS")
 
 
 def test(a):
@@ -39,6 +39,7 @@ def test(a):
 def store_data(table,df,if_exist='append'):
     print("storingdata")
     try:
+        print("In exception")
         if(production):
             quoted = urllib.parse.quote_plus(connection_string)
         else:
@@ -47,10 +48,11 @@ def store_data(table,df,if_exist='append'):
         df.drop_duplicates(inplace=True)
         df.sort_values(by='ID',inplace=True)
         df=df.set_index('ID')
+        print("Instoring data",df.head())
         df.to_sql(table, schema='dbo', con = engine, if_exists=if_exist)
     except Exception as e:
+        print(e)
         return e
-
 
 def pull_data():
     if(production):
@@ -62,6 +64,93 @@ def pull_data():
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     return df
+
+def pull_settings(project_Id):
+    df=pd.DataFrame({})
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    settingsquery="select top 1 project_id from settings where project_id="+str(project_Id)+" group by project_id"
+    #print(settingsquery)
+    #settingsquery=settingsquery+project_Id
+    df=pd.read_sql(settingsquery,connection)
+    connection.close()
+    print(df.head())
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return df   
+def pull_settingslist():
+    df=pd.DataFrame({})
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    settingsquery="select * from settings"
+    #print(settingsquery)
+    #settingsquery=settingsquery+project_Id
+    df=pd.read_sql(settingsquery,connection)
+    connection.close()
+    print(df.head())
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    df['format']=df.apply(test,axis=1)
+    return df['format']
+def pull_settingsbyprojectId(project_Id):
+    df=pd.DataFrame({})
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    settingsquery="select* from settings where project_id="+str(project_Id)
+    #print(settingsquery)
+    #settingsquery=settingsquery+project_Id
+    df=pd.read_sql(settingsquery,connection)
+    connection.close()
+    print(df.head())
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return df
+def insert_settings(project_Id,assignintracker):
+    df=pd.DataFrame({})
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    try:
+        settingsquery="INSERT INTO settings values("+str(project_Id)+","+str(assignintracker)+")"
+        cursor = connection.cursor()
+        cursor.execute(settingsquery)
+        print(cursor)
+        #df=pd.read_sql(settingsquery,connection)
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        return {"results":"failed to save settings because of"+str(e)}
+    #print(df.head())
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return {"results":"Inserted"}
+
+def update_settings(project_Id,assignintracker):
+    df=pd.DataFrame({})
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    try:
+        settingsquery="update settings set assignInTracker="+str(assignintracker)+" where project_id="+str(project_Id)
+        #print(settingsquery)
+        #settingsquery=settingsquery+project_Id
+        #df=pd.read_sql(settingsquery,connection)
+        cursor = connection.cursor()
+        cursor.execute(settingsquery)
+        # for i in cursor:
+        #     print(i)
+        connection.commit()
+        print("currsor",cursor.rowcount)
+        connection.close()
+    except Exception as e:
+        return {"results":"failed to update settings because of"+str(e)}
+    #print(df.head())
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return {"results":"updated"}
 
 def pull_data_byprojectId(projectid):
     if(production):
@@ -130,10 +219,10 @@ def pull_data_bydate(startDate,endDate):
             print(querydate)
     else:
         querydate=querydate
-    # print(querydate)
+    print("Query Date",querydate)
     df=pd.read_sql(querydate,connection)
     connection.close()
-    # print(df.head())
+    print("Dataframe",df.head())
 
     df['createdDate2']=pd.to_datetime(df['CreatedDate']).dt.strftime('%Y-%m')
     df.sort_values('createdDate2',ascending=False,inplace=True)
@@ -151,6 +240,46 @@ def pull_data_bydate(startDate,endDate):
     temp3.fillna(0,inplace=True)
     temp3.rename({'ID_all':'All','ID_policy':'Policy','ID_billing':'Billing','ID_claims':'Claims','ID':'Other'},axis=1,inplace=True)
     #print(df)
+    return df,temp3
+
+def pull_backlg_data_bydate(startDate,endDate):
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    querydate=os.environ.get("TKTS_QUERY_BKLG")
+    #print(querydate)
+    # print("startDate=",startDate,"endDate=",endDate)
+    if(startDate!=''):
+        if(endDate!=''):
+            querydate=querydate+" and [CreatedDate]> '"+ startDate+ "' and [CreatedDate]<'"+endDate+"'"
+            print(querydate)
+        else:
+            querydate=querydate+" and [CreatedDate]> '"+ startDate +"'"
+            print(querydate)
+    else:
+        querydate=querydate
+    # print(querydate)
+    df=pd.read_sql(querydate,connection)
+    connection.close()
+    # print(df.head())
+    print(df.head())
+    df['createdDate2']=pd.to_datetime(df['CreatedDate']).dt.strftime('%Y-%m')
+    df.sort_values('createdDate2',ascending=False,inplace=True)
+    df['Stream']=df['Module'].apply(module_allocation)
+    df['Created Date']=pd.to_datetime(df['CreatedDate'],dayfirst=True)#.dt.date
+    k=pd.DataFrame(df.groupby(['createdDate2']).count()['ID'].reset_index())
+    a=pd.DataFrame(df[df['Stream']=='Policy'].groupby(['createdDate2']).count()['ID'].reset_index())
+    b=pd.DataFrame(df[df['Stream']=='Billing'].groupby(['createdDate2']).count()['ID'].reset_index())
+    c=pd.DataFrame(df[df['Stream']=='Claims'].groupby(['createdDate2']).count()['ID'].reset_index())
+    d=pd.DataFrame(df[df['Stream']=='Other'].groupby(['createdDate2']).count()['ID'].reset_index())
+    temp=pd.merge(k,a,on='createdDate2',how='left',suffixes=('_all', '_policy'))
+    temp1=pd.merge(temp,b,on='createdDate2',how='left')
+    temp2=pd.merge(temp1,c,on='createdDate2',how='left',suffixes=('_billing', '_claims'))
+    temp3=pd.merge(temp2,d,on='createdDate2',how='left')
+    temp3.fillna(0,inplace=True)
+    temp3.rename({'ID_all':'All','ID_policy':'Policy','ID_billing':'Billing','ID_claims':'Claims','ID':'Other'},axis=1,inplace=True)
+    print(df)
     return df,temp3
 
 def get_ticket_byId(id):
@@ -236,6 +365,16 @@ def paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc):
     #print(formated_df.head())
     return formated_df,count,df1
 
+def get_current_developer_bystream(stream,project_Id):
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    streamquery="select * from tbl_Employee E inner join tbl_DCTEmployee DE on E.EmpID=DE.EmpID where E.Stream like '%"+str(stream)+"%' and E.ProjectID="+str(project_Id)
+    df=pd.read_sql(streamquery,connection)
+    print(list(df['EmpName'].values))
+    return list(df['EmpName'].values)
+    
 dataframe=pull_data()
 
 

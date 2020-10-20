@@ -27,15 +27,12 @@ import pickle
 #from prediction import modelling
 import xgboost as xgb
 from xgboost import XGBClassifier
-from get_data import dataframe,get_current_developers
+from get_data import dataframe,get_current_developers,get_current_developer_bystream
 from sklearn.metrics import classification_report,accuracy_score
 from utils.utilfunctions import seggregation,Estimation,missing_values_treatment
+stream={'Billing':'1','Claims':'2','Policy':'3'}
 
 
-# list_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
-#                             'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
-#current_developers=['Divakar Kareddy','Debidatta Dash','Vibha Jain','Arvind Prajapati',
-                           # 'Nidhi Bendon','Manas Das','Siddharth Tiwari','Rohan Sawant','Kuntal Boxi' ]
 current_developers=get_current_developers()
 #print("current developers",current_developers)
 Num_developer=3
@@ -59,31 +56,36 @@ def get_current_developer():
     return current_developer
 
 def current_developer(dataframe,current_developers):
+    
     return dataframe[dataframe['Developer'].isin(current_developers)]
     #return dataframe.head(500)
 
 def devmodelling(dataframe):
     print("Developer modelling")
-    X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
+    #X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
+    X=dataframe['Title']#+' '+dataframe['Seggregation']
     y=dataframe['Developer']
     #X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0,random_state=42)
+    print(dataframe.head())
     tcv=CountVectorizer(analyzer=text_process)
     tfv=TfidfTransformer()
     sm=SMOTE(k_neighbors=1,n_jobs=-1)#k_neighbors=3,
     svc=SVC(kernel='rbf',probability=True)
     #mb=MultinomialNB()
     rfc=RandomForestClassifier()
-    #xgb=xgboost()
+    xgc=XGBClassifier()
     print("before pipe")
-    pipe=make_pipeline(tcv,tfv,sm,rfc)
+    pipe=make_pipeline(tcv,tfv,sm,xgc)
     #pipe=make_pipeline(tcv,tfv,mb)
     #pipe.fit(X=X_train,y=y_train)
     pipe.fit(X,y)
     return pipe
 def estmodelling(dataframe):
     print("Estimate modelling")
+    #print(dataframe.columns)
     X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
-    y=dataframe['Complexcity']
+    y=dataframe['Complexity']
+    #print(dataframe.isna().sum())
     #X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0,random_state=42)
     tcv=CountVectorizer(analyzer=text_process)
     tfv=TfidfTransformer()
@@ -91,20 +93,59 @@ def estmodelling(dataframe):
     svc=SVC(kernel='rbf',probability=True)
     #mb=MultinomialNB()
     rfc=RandomForestClassifier()
-    #xgb=xgboost()
+    xgc=XGBClassifier()
     print("before pipe")
-    pipe=make_pipeline(tcv,tfv,sm,rfc)
+    pipe=make_pipeline(tcv,tfv,sm,xgc)
+    print("after pipe")
     #pipe=make_pipeline(tcv,tfv,mb)
     #pipe.fit(X=X_train,y=y_train)
+    print(X.isna().sum())
+    print(dataframe[y.isna()])
     pipe.fit(X,y)
     return pipe
+
+def devevaluationagr(dataframe,projectid):
+    print("evaluation")
+    try:
+        dataframe=missing_values_treatment(dataframe)
+        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+        dataframe['Complexity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+        dummydf=dataframe.copy()
+    except Exception as e:
+        print(e)
+        raise Exception 
+        return {"message":"error"}
+    accuracy=0
+    for i in stream.items():
+        streamdeveloper=get_current_developer_bystream(i[1],projectid)
+        dummydf=current_developer(dataframe,streamdeveloper)
+        print(dataframe.head())
+        # dataframe=current_developer(dataframe,current_developers)
+        X=dummydf['Title']+' '+dummydf['Seggregation']
+        y=dummydf['Developer']
+        X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
+        tcv=CountVectorizer(analyzer=text_process)
+        tfv=TfidfTransformer()
+        sm=SMOTE(k_neighbors=1,n_jobs=-1)
+        svc=SVC(kernel='rbf',probability=True)
+        rfc=RandomForestClassifier()
+        #mb=MultinomialNB()
+        xgc=XGBClassifier()
+        pipe=make_pipeline(tcv,tfv,sm,xgc)
+        #pipe=make_pipeline(tcv,tfv,mb)
+        pipe.fit(X=X_train,y=y_train)
+        y_predict=pipe.predict(X_test)
+        print(classification_report(y_test,y_predict))
+        print("Accuracy",round(accuracy_score(y_test,y_predict)*100,2))
+        accuracy=accuracy+round(accuracy_score(y_test,y_predict)*100,2)
+    return round(accuracy/len(stream),2)
 
 def devevaluation(dataframe):
     print("evaluation")
     try:
         dataframe=missing_values_treatment(dataframe)
         dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
-        dataframe['Complexcity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+        dataframe['Complexity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
     except Exception as e:
         print(e)
         raise Exception 
@@ -127,17 +168,50 @@ def devevaluation(dataframe):
     print(classification_report(y_test,y_predict))
     print("Accuracy",accuracy_score(y_test,y_predict))
     return round(accuracy_score(y_test,y_predict)*100,2)
+
+def estevaluationagr(dataframe,projectid):
+    print("evaluation")
+    try:
+        dataframe=missing_values_treatment(dataframe)
+        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+        dataframe['Complexity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+        dummyf=dataframe.copy()
+    except Exception as e:
+        return {"message":"error"} 
+    accuracy=0
+    for i in stream.items():
+        streamdeveloper=get_current_developer_bystream(i[1],projectid)
+        dummyf=current_developer(dataframe,streamdeveloper)
+        X=dummyf['Title']+' '+dummyf['Seggregation']
+        y=dummyf['Complexity']
+        X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
+        tcv=CountVectorizer(analyzer=text_process)
+        tfv=TfidfTransformer()
+        sm=SMOTE(k_neighbors=1,n_jobs=-1)
+        svc=SVC(kernel='rbf',probability=True)
+        rfc=RandomForestClassifier()
+        #mb=MultinomialNB()
+        xgc=XGBClassifier()
+        pipe=make_pipeline(tcv,tfv,sm,xgc)
+        #pipe=make_pipeline(tcv,tfv,mb)
+        pipe.fit(X=X_train,y=y_train)
+        y_predict=pipe.predict(X_test)
+        print(classification_report(y_test,y_predict))
+        print("Accuracy",accuracy_score(y_test,y_predict))
+        accuracy=accuracy+round(accuracy_score(y_test,y_predict)*100,2)
+    return round(accuracy,2)
+
 def estevaluation(dataframe):
     print("evaluation")
     try:
         dataframe=missing_values_treatment(dataframe)
         dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
-        dataframe['Complexcity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+        dataframe['Complexity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
     except Exception as e:
         return {"message":"error"} 
     dataframe=current_developer(dataframe,current_developers)
     X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
-    y=dataframe['Complexcity']
+    y=dataframe['Complexity']
     X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
     tcv=CountVectorizer(analyzer=text_process)
     tfv=TfidfTransformer()
@@ -154,20 +228,44 @@ def estevaluation(dataframe):
     print("Accuracy",accuracy_score(y_test,y_predict))
     return round(accuracy_score(y_test,y_predict)*100,2)
 
-def run_model(dataframe):
+# def run_model(dataframe,projectid=1):
+#     dataframe=missing_values_treatment(dataframe)
+#     dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+#     dataframe['Complexity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+#     #except Exception as e:
+#     #print(e)
+#     #return {"message":e} 
+#     for i in stream.items():
+#         streamdeveloper=get_current_developer_bystream(i[1],projectid)
+#         print(i[0]," developers")
+#         print(streamdeveloper)
+#         current_dataframe=current_developer(dataframe,streamdeveloper)
+#         devmodel=devmodelling(current_dataframe)
+#         estmodel=estmodelling(current_dataframe)
+#         print("Model Generated as pickle file")
+#         pickle.dump(devmodel,open('devmodel'+str(i[0])+"_"+str(projectid)+'.pkl', 'wb'))
+#         pickle.dump(estmodel,open('estmodel'+str(i[0])+"_"+str(projectid)+'.pkl', 'wb'))
+#     #return model
+#     return {"message": "Model ran successfull"},200
+
+def run_model(dataframe,projectid=1):
     try:
         dataframe=missing_values_treatment(dataframe)
         dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
-        dataframe['Complexcity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+        dataframe['Complexity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
     except Exception as e:
         print(e)
         return {"message":e} 
-    current_dataframe=current_developer(dataframe,current_developers)
-    devmodel=devmodelling(current_dataframe)
-    estmodel=estmodelling(current_dataframe)
-    print("Model Generated as pickle file")
-    pickle.dump(devmodel,open('devmodel.pkl', 'wb'))
-    pickle.dump(estmodel,open('estmodel.pkl', 'wb'))
+    for i in stream.items():
+        streamdeveloper=get_current_developer_bystream(i[1],projectid)
+        print(i[0]," developers")
+        print(streamdeveloper)
+        current_dataframe=current_developer(dataframe,streamdeveloper)
+        devmodel=devmodelling(current_dataframe)
+        estmodel=estmodelling(current_dataframe)
+        print("Model Generated as pickle file")
+        pickle.dump(devmodel,open('devmodel'+str(i[0])+"_"+str(projectid)+'.pkl', 'wb'))
+        pickle.dump(estmodel,open('estmodel'+str(i[0])+"_"+str(projectid)+'.pkl', 'wb'))
     #return model
     return {"message": "Model ran successfull"},200
 
