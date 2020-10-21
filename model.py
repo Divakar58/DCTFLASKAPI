@@ -199,7 +199,7 @@ def estevaluationagr(dataframe,projectid):
         print(classification_report(y_test,y_predict))
         print("Accuracy",accuracy_score(y_test,y_predict))
         accuracy=accuracy+round(accuracy_score(y_test,y_predict)*100,2)
-    return round(accuracy,2)
+    return round(accuracy/len(stream),2)
 
 def estevaluation(dataframe):
     print("evaluation")

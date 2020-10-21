@@ -1,279 +1,41 @@
-,index,CreatedDate,Title,Developer1,Developer2,Developer3,ID,Recommended,LastUpdated,Estimate
-215,0,2020-01-02,Claim 102265 - error when navigating to the Assign performer page,Arvind Prajapati,Manas Das,Swati Rastogi,48647,Arvind Prajapati,2020-10-20,21.0
-0,1,2020-01-03,Change Request - Shred Changes for CYB risk,Debidatta Dash,Matthew Murray,Divakar Kareddy,48655,Debidatta Dash,2020-10-20,24.0
-216,2,2020-01-06,Claims: Error on financial transfer from claim 125151_C1 to 125151,Arvind Prajapati,Swati Rastogi,Manas Das,48679,Arvind Prajapati,2020-10-20,29.0
-217,3,2020-01-07,Claims: Performance issues with policy 005PA000024040.  Unable to add reserves or close financials on claims with this policy.,Arvind Prajapati,Swati Rastogi,Manas Das,48683,Arvind Prajapati,2020-10-20,31.0
-169,4,2020-01-07,Billing Lockbox - Payment reported as error and posted to Account as expected,Vibha Jain,Siddharth Tiwari,Jonathan pinney,48694,Vibha Jain,2020-10-20,16.0
-1,5,2020-01-09,Policy - CYB - CYB Indicator is defaulting to No at renewal for certain Provider Risks,Divakar Kareddy,Nidhi Benson,Debidatta Dash,48709,Divakar Kareddy,2020-10-20,26.0
-2,6,2020-01-11,Party - Searching Enhancements,Debidatta Dash,Matthew Murray,Nidhi Benson,48732,Debidatta Dash,2020-10-20,16.0
-3,7,2020-01-11,PROD: Removal of rule where policies without Cyber coverage are Renewed with it,Matthew Murray,Deepak Mane,Divakar Kareddy,48734,Matthew Murray,2020-10-20,24.0
-4,8,2020-01-13,PARTY - Clarification Needed on Party Wildcard Searches in DCOD,Debidatta Dash,Divakar Kareddy,Matthew Murray,48745,Debidatta Dash,2020-10-20,17.0
-218,9,2020-01-13,Claims: Error when transferring financials from 126932_C1 to 126932 - Also for 130062_C1 to 130062,Arvind Prajapati,Swati Rastogi,Manas Das,48748,Arvind Prajapati,2020-10-20,30.0
-5,10,2020-01-14,Policy - Change Request - Need ability to add Facility CPP risk to Shell policies,Divakar Kareddy,Prasad Chavri,Matthew Murray,48757,Divakar Kareddy,2020-10-20,24.0
-219,11,2020-01-17,Claim 140169 the Coverys Protection Plus coverage is not coming over into the claim,Arvind Prajapati,Swati Rastogi,Manas Das,48782,Arvind Prajapati,2020-10-20,30.0
-6,12,2020-01-17,Policy - Root Cause - Midterm reinstatement returning incorrect minimum premium - Not matching cancellation,Matthew Murray,Debidatta Dash,Nidhi Benson,48783,Matthew Murray,2020-10-20,24.0
-220,13,2020-01-17,Claims: Claim consultant Vivian Howell is getting an error message when she tries to save a file note (multiple claim numbers),Manas Das,Arvind Prajapati,Swati Rastogi,48787,Manas Das,2020-10-20,25.0
-7,14,2020-01-19,DCOD UAT - Duplicate Agent Record - Need to remove duplicate agency record from DCOD UAT  (GAA1234567),Divakar Kareddy,Debidatta Dash,Prasad Chavri,48792,Divakar Kareddy,2020-10-20,22.0
-221,15,2020-01-20,"Claim 22120M--Corrected the Per Occurence limit to allowing a valid payment to be made, Available Limits still need to be corrected.",Manas Das,Arvind Prajapati,Swati Rastogi,48795,Manas Das,2020-10-20,24.0
-8,16,2020-01-24,"DCOD - Header and Footer need to be updated for Policy, Party, Billing and Claims",Debidatta Dash,Prasad Chavri,Divakar Kareddy,48819,Debidatta Dash,2020-10-20,23.0
-9,17,2020-01-25,"DCOD - DEV01 Party Results Screen displays DOB, if exists, as currency and not an actual date",Divakar Kareddy,Nidhi Benson,Debidatta Dash,48822,Divakar Kareddy,2020-10-20,18.0
-10,18,2020-01-25,Production Validation - Policy - Download Latest button on Transact page,Matthew Murray,Debidatta Dash,Divakar Kareddy,48828,Matthew Murray,2020-10-20,24.0
-11,19,2020-01-25,Production Validation - Policy - Search count number of results not showing or being cut off,Debidatta Dash,Matthew Murray,Divakar Kareddy,48829,Debidatta Dash,2020-10-20,24.0
-12,20,2020-01-26,DCOD -PROD- Disable admin/admin log in for User Admin,Divakar Kareddy,Debidatta Dash,Matthew Murray,48833,Divakar Kareddy,2020-10-20,23.0
-13,21,2020-01-26,"Prod Validation - Error when selecting ""View all Notifications""",Matthew Murray,Divakar Kareddy,Nidhi Benson,48834,Matthew Murray,2020-10-20,26.0
-14,22,2020-01-26,Prod Validation - Need to remove Return to Login on RSOD screen,Matthew Murray,Debidatta Dash,Divakar Kareddy,48838,Matthew Murray,2020-10-20,25.0
-15,23,2020-01-26,Production Validation - Policy - Insured type from party not pulling into policy risk details,Debidatta Dash,Prasad Chavri,Nidhi Benson,48839,Debidatta Dash,2020-10-20,25.0
-16,24,2020-01-26,Production Validation - Policy - Phone number dashes are missing from Applicant page (SF 00082483 ),Debidatta Dash,Matthew Murray,Divakar Kareddy,48840,Debidatta Dash,2020-10-20,24.0
-170,25,2020-01-26,Lockbox File: Netcore receipt date is not getting picked up,Siddharth Tiwari,Manasi Bobade,Vibha Jain,48844,Siddharth Tiwari,2020-10-20,16.0
-171,26,2020-01-26,DCoD Payments List page - Column sort doesn't work in Chrome,Manasi Bobade,Siddharth Tiwari,Vibha Jain,48845,Manasi Bobade,2020-10-20,16.0
-172,27,2020-01-26,DCoD UAT - Documents not loading to Onbase on 1/26/20,Manasi Bobade,Siddharth Tiwari,Jonathan pinney,48846,Manasi Bobade,2020-10-20,17.0
-173,28,2020-01-27,Prod Post Go-Live – Billing - Invoices generated 1/24/2020 and 1/27/2020,Siddharth Tiwari,Vibha Jain,Nikita Mazgaonkar,48868,Siddharth Tiwari,2020-10-20,16.0
-17,29,2020-01-29,Prod Post Go Live: Policy - Need to add lines between risks on the schedules,Divakar Kareddy,Debidatta Dash,Prasad Chavri,48916,Divakar Kareddy,2020-10-20,24.0
-18,30,2020-01-31,"Prod Post Go-Live - Policy - Read only access - After viewing a pending quote that is checked out, your screen refreshes on the transact page on every click.",Divakar Kareddy,Nidhi Benson,Matthew Murray,48938,Divakar Kareddy,2020-10-20,17.0
-222,31,2020-02-01,PROD Post  Go Live:  Claims-- Change to automatic task generation so only certain tasks are generated when claim and suit and coverage type = Excess over non-Coverys primary,Arvind Prajapati,Manas Das,Swati Rastogi,48942,Arvind Prajapati,2020-10-20,18.0
-223,32,2020-02-05,"Prod Post Go Live, Claims:  Claim Number Changing after processing transaction.  3 issues reported",Manas Das,Arvind Prajapati,Swati Rastogi,48977,Manas Das,2020-10-20,18.0
-174,33,2020-02-13,005AGY0000136232 Agency Statement Not Generating (Data Fix),Jonathan pinney,Vibha Jain,Siddharth Tiwari,49038,Jonathan pinney,2020-10-20,17.0
-19,34,2020-02-25,"Prod Post Go Live - Policy - Endorsement to add new risk is replaced with previously added risk - MCWAH 003WI000006791 - Error ""There is no transact session to rollback.""",Nidhi Benson,Divakar Kareddy,Matthew Murray,49141,Nidhi Benson,2020-10-20,32.0
-175,35,2020-02-26,RECV Error: The operation is not valid for the state of the transaction.,Jonathan pinney,Vibha Jain,Manasi Bobade,49154,Jonathan pinney,2020-10-20,17.0
-20,36,2020-02-27,Prod Post Go Live - Policy - Schedule of Risk sorting only sorts 1 page at a time,Divakar Kareddy,Nidhi Benson,Matthew Murray,49156,Divakar Kareddy,2020-10-20,24.0
-224,37,2020-02-27,"Prod Post, Claims:   Risk Key sent to Claims has incorrect data",Arvind Prajapati,Manas Das,Swati Rastogi,49161,Arvind Prajapati,2020-10-20,25.0
-21,38,2020-02-28,Prod Post Go Live - Policy - Error when non renewing,Matthew Murray,Nidhi Benson,Debidatta Dash,49171,Matthew Murray,2020-10-20,26.0
-22,39,2020-02-28,Data Fix - Backfill existing policies with the yet-to-be-created policy deductible flag that designates whether the per-occurrence deductible erodes at a Claim level or Event level  (Ticket 47350 addresses creating that flag.),Debidatta Dash,Divakar Kareddy,Matthew Murray,49183,Debidatta Dash,2020-10-20,27.0
-225,40,2020-02-28,"Data Fix - On existing claims with deductible profiles on SOI's, backfill the yet-to-be-created policy deductible field indicating if erosion is at an Event or at a Claim  level TFS 47350 create the field in Policy and 47344 creates the file on Claims)",Swati Rastogi,Arvind Prajapati,Manas Das,49186,Swati Rastogi,2020-10-20,25.0
-23,41,2020-03-02,"Prod Post Go Live - Policy - Changing agency on UW page, and pressing No on the Move link causes spinning",Divakar Kareddy,Nidhi Benson,Matthew Murray,49205,Divakar Kareddy,2020-10-20,21.0
-24,42,2020-03-05,Prod Post Go Live - Policy - Insured Name doesn't show on Search Results screen (Data Fix),Debidatta Dash,Divakar Kareddy,Matthew Murray,49235,Debidatta Dash,2020-10-20,24.0
-25,43,2020-03-05,Prod Post Go Live - Policy - Upload Risk / Import Risk error,Divakar Kareddy,Nidhi Benson,Matthew Murray,49237,Divakar Kareddy,2020-10-20,27.0
-26,44,2020-03-10,Modus to Netcore - Policy / New Quote / Search and Select by Party Number versus legacy number,Debidatta Dash,Divakar Kareddy,Nidhi Benson,49268,Debidatta Dash,2020-10-20,24.0
-176,45,2020-03-10,Billing - PROD - Agent Statement Formatting Review,Siddharth Tiwari,Jonathan pinney,Vibha Jain,49278,Siddharth Tiwari,2020-10-20,17.0
-226,46,2020-03-13,Prod post go live Claim 124149 remove 'Indefinite' from the tail type field on SOI coverage page.  coverage is not a tail coverage (Data Fix),Arvind Prajapati,Manas Das,Swati Rastogi,49295,Arvind Prajapati,2020-10-20,24.0
-227,47,2020-03-13,Prod Post go live Claims: Financial transfer on claim 123581 did not process correctly,Manas Das,Arvind Prajapati,Swati Rastogi,49296,Manas Das,2020-10-20,23.0
-177,48,2020-03-14,"Billing - PROD - Invoice Print Queue - Sorted by Policy #, not printing in order (Robotics)",Siddharth Tiwari,Vibha Jain,Manasi Bobade,49307,Siddharth Tiwari,2020-10-20,16.0
-178,49,2020-03-16,Activity Log for Billing Accounts do not display amounts less the $ 1.00 - pos or neg 001COM0000002261,Siddharth Tiwari,Jonathan pinney,Manasi Bobade,49327,Siddharth Tiwari,2020-10-20,21.0
-27,50,2020-03-19,Prod Post Go Live - Policy - TransACT page Term Filter needs to be selected twice to refresh,Divakar Kareddy,Matthew Murray,Nidhi Benson,49354,Divakar Kareddy,2020-10-20,24.0
-28,51,2020-03-20,Change Request - Add optional Disinfection Event Reimbusement coverage to CGL,Debidatta Dash,Matthew Murray,Nidhi Benson,49358,Debidatta Dash,2020-10-20,24.0
-29,52,2020-03-21,Prod Post Go Live - Party - Address are missing or blank in party (data fix),Debidatta Dash,Deepak Mane,Divakar Kareddy,49364,Debidatta Dash,2020-10-20,17.0
-228,53,2020-03-24,MODUS to NetCore Conversion Project / Medicare Integration (Main Ticket),Arvind Prajapati,Manas Das,Swati Rastogi,49392,Arvind Prajapati,2020-10-20,24.0
-30,54,2020-03-27,Policy - PLR Coverage on Policy after Product Expired,Nidhi Benson,Matthew Murray,Debidatta Dash,49422,Nidhi Benson,2020-10-20,24.0
-31,55,2020-03-31,Shred - Data Fix - Resolve duplicate transaction sequence numbers,Debidatta Dash,Matthew Murray,Prasad Chavri,49449,Debidatta Dash,2020-10-20,24.0
-179,56,2020-04-02,Billing - Payment allocation - Resolve issue that caused misallocation of payment while automatically writing off installment fees,Vibha Jain,Manasi Bobade,Siddharth Tiwari,49462,Vibha Jain,2020-10-20,17.0
-32,57,2020-04-02,ProSelect Merger - Data Fix - EAI on FPL for companies 003 and 004,Matthew Murray,Nidhi Benson,Divakar Kareddy,49463,Matthew Murray,2020-10-20,24.0
-229,58,2020-04-03,Prod Post Go Live Claims: Remove (inactivate) codes from the Contributing factors field and change wording on other values,Arvind Prajapati,Manas Das,Swati Rastogi,49469,Arvind Prajapati,2020-10-20,22.0
-33,59,2020-04-14,Party - Address Type - Proxy,Debidatta Dash,Prasad Chavri,Matthew Murray,49559,Debidatta Dash,2020-10-20,16.0
-34,60,2020-04-20,Policy - Root cause to prevent duplicate in XML from OOS endorsements,Debidatta Dash,Nidhi Benson,Divakar Kareddy,49587,Debidatta Dash,2020-10-20,24.0
-35,61,2020-04-20,MedIQ to ProGL Mapping IT Breakout (-24-),Debidatta Dash,Matthew Murray,Divakar Kareddy,49591,Debidatta Dash,2020-10-20,24.0
-230,62,2020-04-21,Line Indicator 'New' on Closed Claim Numbers.,Arvind Prajapati,Manas Das,Swati Rastogi,49595,Arvind Prajapati,2020-10-20,28.0
-36,63,2020-04-29,Xpertdoc - Policy Data Mapping - Map new NetCore Program field to new SQL field CovPolicyTBL.Program,Debidatta Dash,Divakar Kareddy,Matthew Murray,49639,Debidatta Dash,2020-10-20,24.0
-231,64,2020-04-29,Display the test environment name on the NetCore claims screen,Arvind Prajapati,Manas Das,Swati Rastogi,49641,Arvind Prajapati,2020-10-20,30.0
-180,65,2020-04-29,Billing - We need the ability to produce Electronic Invoices from  Netcore,Siddharth Tiwari,Nikita Mazgaonkar,Manasi Bobade,49642,Siddharth Tiwari,2020-10-20,17.0
-181,66,2020-05-04,Billing - Root Cause - Transactions where name contains an & do not post to Billing (SF 00096061),Manasi Bobade,Vibha Jain,Siddharth Tiwari,49671,Manasi Bobade,2020-10-20,16.0
-232,67,2020-05-06,Claims- NetCore Claims changes needed for Policy’s New Product - Disinfection Event Reimbursement Coverage.,Arvind Prajapati,Manas Das,Swati Rastogi,49718,Arvind Prajapati,2020-10-20,26.0
-182,68,2020-05-08,Billing - Premium Invoices missing detail information on page 2 of invoice,Vibha Jain,Siddharth Tiwari,Manasi Bobade,49734,Vibha Jain,2020-10-20,22.0
-37,69,2020-05-15,Need to add EXM risks to PEXR Report,Debidatta Dash,Divakar Kareddy,Nidhi Benson,49777,Debidatta Dash,2020-10-20,25.0
-233,70,2020-05-15,"Claims:  On Modified Claims Made Standard Coverages, AERP Date should not apply. (Policy Seach/FNOL BR4.0)",Arvind Prajapati,Swati Rastogi,Manas Das,49779,Arvind Prajapati,2020-10-20,26.0
-183,71,2020-05-17,Billing - Report Request - New Jersey Order for Information,Vibha Jain,Manasi Bobade,Jonathan pinney,49785,Vibha Jain,2020-10-20,16.0
-38,72,2020-05-19,Policy - Data Fix - CSIC needs UST (Underground Storage Tank) coverage added for all existing policies,Debidatta Dash,Prasad Chavri,Matthew Murray,49793,Debidatta Dash,2020-10-20,27.0
-39,73,2020-05-21,Party - OFAC - OFAC isn't working,Nidhi Benson,Debidatta Dash,Prasad Chavri,49805,Nidhi Benson,2020-10-20,16.0
-40,74,2020-05-26,ProSelect Merger - Fix hardcoding for Discount Credit Program dropdown for AHC,Matthew Murray,Divakar Kareddy,Nidhi Benson,49826,Matthew Murray,2020-10-20,24.0
-184,75,2020-05-27,Issue related to ReviewRq (Base Issue - SF89442),Manasi Bobade,Vibha Jain,Jonathan pinney,49833,Manasi Bobade,2020-10-20,20.0
-41,76,2020-05-27,Policy - Page jumping on sexual misconduct fields and buy up value not saving,Prasad Chavri,Nidhi Benson,Divakar Kareddy,49835,Prasad Chavri,2020-10-20,24.0
-234,77,2020-05-28,"Claims: Add to the Quick search, when searching for claims by last name or organization name under additional criteria add more options to the role drop down",Manas Das,Arvind Prajapati,Swati Rastogi,49842,Manas Das,2020-10-20,18.0
-42,78,2020-05-28,Policy - UAT environment - Fix for OOS Async Memory Error,Debidatta Dash,Divakar Kareddy,Matthew Murray,49851,Debidatta Dash,2020-10-20,26.0
-185,79,2020-06-01,Billing - Prod - Payments went into suspense instead of applying to the open premium 009PRM0000140766,Siddharth Tiwari,Vibha Jain,Manasi Bobade,49871,Siddharth Tiwari,2020-10-20,17.0
-235,80,2020-06-02,Claims: Technical error occurred while Policy Attach during FNOL on policy 002PA000018161,Swati Rastogi,Manas Das,Arvind Prajapati,49879,Swati Rastogi,2020-10-20,25.0
-43,81,2020-06-02,VBC - Need to add Co-Insurance field,Debidatta Dash,Prasad Chavri,Nidhi Benson,49881,Debidatta Dash,2020-10-20,24.0
-236,82,2020-06-03,Policy Number:  003MI900031279 - getting error of Technical Error During Policy Attach,Manas Das,Swati Rastogi,Arvind Prajapati,49882,Manas Das,2020-10-20,25.0
-237,83,2020-06-03,Pat Meyer unable to mark Tasks for Establish Reserve complete,Swati Rastogi,Arvind Prajapati,Manas Das,49883,Swati Rastogi,2020-10-20,17.0
-186,84,2020-06-03,Billing-Invoices are on the Billing Account but one of the copies has not posted to Onbase,Siddharth Tiwari,Vibha Jain,Jonathan pinney,49885,Siddharth Tiwari,2020-10-20,16.0
-187,85,2020-06-03,Billing-Agent copy of invoice was added to Onbase 6 days after the insured copy,Siddharth Tiwari,Vibha Jain,Manasi Bobade,49886,Siddharth Tiwari,2020-10-20,18.0
-44,86,2020-06-03,Policy - CGL/PPL retained minimum premium issues with limit profiles,Matthew Murray,Nidhi Benson,Debidatta Dash,49895,Matthew Murray,2020-10-20,21.0
-238,87,2020-06-04,Claim 139915 check had stop payment/void processed in Paypilot but did not update NetCore check 25912,Arvind Prajapati,Manas Das,Swati Rastogi,49902,Arvind Prajapati,2020-10-20,27.0
-45,88,2020-06-05,Policy - RRG - Add all states to rating states,Matthew Murray,Debidatta Dash,Nidhi Benson,49904,Matthew Murray,2020-10-20,24.0
-46,89,2020-06-05,"NetCore Policy - Data Fix - Identify and remove ""phantom"" risks from existing NetCore policies",Debidatta Dash,Divakar Kareddy,Nidhi Benson,49911,Debidatta Dash,2020-10-20,25.0
-47,90,2020-06-05,NetCore Policy - Change Request - Add hard edit to prevent user from binding a transaction if phantom risks exist on the policy,Debidatta Dash,Divakar Kareddy,Nidhi Benson,49912,Debidatta Dash,2020-10-20,24.0
-48,91,2020-06-05,Policy - Rating - Risk Management Subjective Credit for FPL,Matthew Murray,Nidhi Benson,Debidatta Dash,49918,Matthew Murray,2020-10-20,25.0
-188,92,2020-06-09,Billing -Add the billing email address to current billing documents for all Companies in Netcore,Manasi Bobade,Siddharth Tiwari,Jonathan pinney,49926,Manasi Bobade,2020-10-20,16.0
-239,93,2020-06-11,Claims: Change the claims manager for all open files where Susan Smith is the claim owner to Bruce Kilgallon,Arvind Prajapati,Manas Das,Swati Rastogi,49945,Arvind Prajapati,2020-10-20,21.0
-49,94,2020-06-13,Policy - Total Risk Management Credit factor doesn't update when adding RMS credit programs,Debidatta Dash,Nidhi Benson,Matthew Murray,49957,Debidatta Dash,2020-10-20,25.0
-50,95,2020-06-15,Data Fix - Remove renewal term from prior term xml,Debidatta Dash,Divakar Kareddy,Nidhi Benson,49962,Debidatta Dash,2020-10-20,24.0
-51,96,2020-06-16,Party - Error when expiring addresses,Debidatta Dash,Matthew Murray,Nidhi Benson,49970,Debidatta Dash,2020-10-20,19.0
-52,97,2020-06-16,"Policy - Data Fix - Backfill ""Program"" field in NetCore Policy for specified policies",Debidatta Dash,Divakar Kareddy,Matthew Murray,49973,Debidatta Dash,2020-10-20,24.0
-240,98,2020-06-16,"Claims - Change Request- Add ""Program""  field from Policy sytem to Claim data",Arvind Prajapati,Manas Das,Swati Rastogi,49974,Arvind Prajapati,2020-10-20,29.0
-53,99,2020-06-16,"Policy - When Save and Exiting from a new quote, the Transact page does not default to the pending term",Nidhi Benson,Divakar Kareddy,Debidatta Dash,49975,Nidhi Benson,2020-10-20,24.0
-241,100,2020-06-16,"Claims - Data Fix - Backfill ""Program"" data values for all claims associated with specified program policies",Manas Das,Arvind Prajapati,Swati Rastogi,49977,Manas Das,2020-10-20,24.0
-54,101,2020-06-16,Tail Risks - Tail Rate Effective Date Default,Divakar Kareddy,Matthew Murray,Nidhi Benson,49979,Divakar Kareddy,2020-10-20,24.0
-55,102,2020-06-17,Policy - Loss Free incorrectly counting claim with less than 10k indemnity,Debidatta Dash,Prasad Chavri,Divakar Kareddy,49983,Debidatta Dash,2020-10-20,24.0
-56,103,2020-06-18,"Policy - Shred - Resolve Duplicate, Missing, and Variances for various policies for week of 06/15",Debidatta Dash,Matthew Murray,Divakar Kareddy,49987,Debidatta Dash,2020-10-20,24.0
-189,104,2020-06-18,Billing - Root Cause - Determine the root cause of duplicate PRM billing accounts being created,Jonathan pinney,Siddharth Tiwari,Vibha Jain,49989,Jonathan pinney,2020-10-20,20.0
-242,105,2020-06-19,claims: Regina Norato has a bunch of tasks for Review additional authority requests for reserves on claims that closed some time ago and she cannot delete the tasks,Arvind Prajapati,Swati Rastogi,Manas Das,49998,Arvind Prajapati,2020-10-20,30.0
-243,106,2020-06-22,"Claims: When the party address is the primary address is replaced with the new address, the primary address should automatically switch to the new address",Manas Das,Arvind Prajapati,Swati Rastogi,50002,Manas Das,2020-10-20,24.0
-57,107,2020-06-22,Shred Change - Add Shell policy fields to the shred,Matthew Murray,Nidhi Benson,Debidatta Dash,50004,Matthew Murray,2020-10-20,24.0
-58,108,2020-06-23,Policy - Dividend not calculating properly on 001MA000003249,Debidatta Dash,Matthew Murray,Nidhi Benson,50011,Debidatta Dash,2020-10-20,25.0
-59,109,2020-06-23,"Policy - Agency Billed payment plans are cleared out with Referrals, and they do not carry over at Renewal",Divakar Kareddy,Debidatta Dash,Prasad Chavri,50016,Divakar Kareddy,2020-10-20,25.0
-60,110,2020-06-24,Policy-Error Received when trying to add CGL 043 Additional Form,Debidatta Dash,Matthew Murray,Divakar Kareddy,50019,Debidatta Dash,2020-10-20,24.0
-190,111,2020-06-24,Modus To Netcore - Billing - Prevent PCN Activities on Fronted Policies,Siddharth Tiwari,Manasi Bobade,Jonathan pinney,50023,Siddharth Tiwari,2020-10-20,16.0
-61,112,2020-06-24,Shred - Increase the size of the carrier field in shred to align with UI field size of 150,Matthew Murray,Debidatta Dash,Divakar Kareddy,50025,Matthew Murray,2020-10-20,24.0
-62,113,2020-06-25,"ProSelect Merger - Policy - Rate Tables - LA - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50028,Nidhi Benson,2020-10-20,19.0
-63,114,2020-06-25,"ProSelect Merger - Policy - Rate Tables - CO - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Prasad Chavri,50030,Nidhi Benson,2020-10-20,19.0
-64,115,2020-06-25,"ProSelect Merger - Policy - Rate Tables - WV - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50032,Nidhi Benson,2020-10-20,19.0
-65,116,2020-06-25,"ProSelect Merger - Policy - Rate Tables - AK - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50034,Nidhi Benson,2020-10-20,19.0
-66,117,2020-06-25,"ProSelect Merger - Policy - Rate Tables - IA - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50036,Nidhi Benson,2020-10-20,19.0
-67,118,2020-06-25,"ProSelect Merger - Policy - Rate Tables - AR - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50038,Nidhi Benson,2020-10-20,19.0
-68,119,2020-06-25,"ProSelect Merger - Policy - Rate Tables - DE - PPL/CPL, FPL, GL, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50044,Nidhi Benson,2020-10-20,19.0
-69,120,2020-06-26,Party - Message hub isn't working in UAT,Debidatta Dash,Divakar Kareddy,Matthew Murray,50049,Debidatta Dash,2020-10-20,17.0
-70,121,2020-06-26,"Policy - Change Request - Add ""Policy Affiliation"" fields to Policy Detail",Matthew Murray,Debidatta Dash,Nidhi Benson,50050,Matthew Murray,2020-10-20,24.0
-71,122,2020-06-26,Policy - Risk Type on EXU not populating on underlying risk schedule.,Debidatta Dash,Nidhi Benson,Matthew Murray,50057,Debidatta Dash,2020-10-20,24.0
-72,123,2020-06-29,Policy - Correct premium non-renew transaction in shred,Debidatta Dash,Matthew Murray,Prasad Chavri,50070,Debidatta Dash,2020-10-20,25.0
-191,124,2020-06-30,Modus To Netcore - Billing - CA ProSelect DBA,Siddharth Tiwari,Manasi Bobade,Jonathan pinney,50077,Siddharth Tiwari,2020-10-20,16.0
-73,125,2020-06-30,Policy - Back to Pending button missing after referral is approved,Debidatta Dash,Matthew Murray,Nidhi Benson,50079,Debidatta Dash,2020-10-20,24.0
-244,126,2020-06-30,Claim Number:  134169 - unable to make payment,Arvind Prajapati,Manas Das,Swati Rastogi,50080,Arvind Prajapati,2020-10-20,25.0
-74,127,2020-07-02,Policy: ROOT CAUSE 144138 - need to remove the cancel date from the coverage page as the policy as canceled and reinstated,Debidatta Dash,Nidhi Benson,Prasad Chavri,50105,Debidatta Dash,2020-10-20,24.0
-75,128,2020-07-03,Policy - EXM Tail error when adding multiple underlying risks,Debidatta Dash,Prasad Chavri,Nidhi Benson,50110,Debidatta Dash,2020-10-20,28.0
-76,129,2020-07-06,Policy - STP - Shred failure for following error Schema file [F:\DuckCreek\Policy\Schemas\PPLSchema.xml] not found.,Nidhi Benson,Matthew Murray,Debidatta Dash,50114,Nidhi Benson,2020-10-20,28.0
-77,130,2020-07-07,"ProSelect Merger - Policy - Rate Tables - NJ - PPL/CPL, FPL, GL, EBL - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50130,Nidhi Benson,2020-10-20,22.0
-78,131,2020-07-07,"ProSelect Merger - Policy - Rate Tables - NJ - PPL/CPL, FPL, GL, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50131,Nidhi Benson,2020-10-20,20.0
-79,132,2020-07-09,"ProSelect Merger - Policy - Rate Tables - CA - PPL/CPL, FPL, GL, EXU, EBL - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50142,Nidhi Benson,2020-10-20,17.0
-80,133,2020-07-09,"ProSelect Merger - Policy - Rate Tables - CA - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50143,Nidhi Benson,2020-10-20,19.0
-81,134,2020-07-09,Policy Change Request - Assumed Reinsurlance Tail Risk,Debidatta Dash,Matthew Murray,Nidhi Benson,50146,Debidatta Dash,2020-10-20,24.0
-82,135,2020-07-10,"ProSelect Merger - Policy - Rate Tables - NE - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50158,Nidhi Benson,2020-10-20,19.0
-83,136,2020-07-11,Policy - EXM - Evaluate Layers if User Changes Limits,Debidatta Dash,Nidhi Benson,Divakar Kareddy,50164,Debidatta Dash,2020-10-20,24.0
-84,137,2020-07-13,"ProSelect Merger - Policy - Rate Tables - KS - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50172,Nidhi Benson,2020-10-20,19.0
-85,138,2020-07-14,Party - Merged Party during Party Search - Root Cause,Debidatta Dash,Divakar Kareddy,Prasad Chavri,50173,Debidatta Dash,2020-10-20,23.0
-86,139,2020-07-14,Party - Merged Party during Party Search - Data Fix,Debidatta Dash,Matthew Murray,Divakar Kareddy,50174,Debidatta Dash,2020-10-20,22.0
-87,140,2020-07-14,"ProSelect Merger - Policy - Rate Tables - SC - PPL/CPL, FPL, GL, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Divakar Kareddy,Nidhi Benson,Matthew Murray,50180,Divakar Kareddy,2020-10-20,20.0
-88,141,2020-07-15,Policy - FPL risk premium is being returned incorrectly because Limit Profile was added midterm with minimum premium,Matthew Murray,Nidhi Benson,Debidatta Dash,50184,Matthew Murray,2020-10-20,25.0
-89,142,2020-07-15,Policy - Underwriting (UW) Page - New Fields Needed for Renewal Letters,Debidatta Dash,Matthew Murray,Prasad Chavri,50185,Debidatta Dash,2020-10-20,23.0
-90,143,2020-07-15,Modus to NetCore - GL changes for Security and Protection coverage,Debidatta Dash,Matthew Murray,Divakar Kareddy,50188,Debidatta Dash,2020-10-20,24.0
-91,144,2020-07-15,Modus to Netcore - Security and Protection coverage - Add new field to the Shred,Debidatta Dash,Matthew Murray,Deepak Mane,50189,Debidatta Dash,2020-10-20,24.0
-245,145,2020-07-16,Claims:  MODUS to NetCore Claim Conversion (Main Ticket),Arvind Prajapati,Manas Das,Swati Rastogi,50191,Arvind Prajapati,2020-10-20,27.0
-92,146,2020-07-17,Policy - Rate Tables - Add Effective Date to LayerTreaty Table in EXU/EXM Manuscript,Debidatta Dash,Deepak Mane,Prasad Chavri,50201,Debidatta Dash,2020-10-20,22.0
-246,147,2020-07-17,Claim 145585 - technical difficulties error during FNOL on Save and Continue on the involved Insured screen during FNOL,Arvind Prajapati,Manas Das,Swati Rastogi,50207,Arvind Prajapati,2020-10-20,24.0
-192,148,2020-07-18,Modus To Netcore - Billing - PCF on Account Breakdown Letter needs to be State specific,Siddharth Tiwari,Manasi Bobade,Jonathan pinney,50217,Siddharth Tiwari,2020-10-20,16.0
-93,149,2020-07-21,Modus to NetCore - Xpertdoc - New Coverys_Rules table on cov-xdoc-sql-d and -p,Matthew Murray,Deepak Mane,Debidatta Dash,50250,Matthew Murray,2020-10-20,24.0
-247,150,2020-07-21,Policy Snapshot - Amend IS4W policy Snapshot process to include table driven extended coverage information,Swati Rastogi,Manas Das,Arvind Prajapati,50257,Swati Rastogi,2020-10-20,25.0
-248,151,2020-07-21,Data Fix - Claims - Update certain coverage attributes for existing Claims on several CSIC policies,Manas Das,Arvind Prajapati,Swati Rastogi,50258,Manas Das,2020-10-20,21.0
-94,152,2020-07-22,Policy - Temporary fix to prevent transactions from being bound when Cyber schedules and class lines are blank,Debidatta Dash,Divakar Kareddy,Matthew Murray,50260,Debidatta Dash,2020-10-20,24.0
-95,153,2020-07-22,MCWAH - Performance Issues on Pending Renewal - Deleted Providers during renewal reappear,Matthew Murray,Debidatta Dash,Divakar Kareddy,50266,Matthew Murray,2020-10-20,24.0
-96,154,2020-07-22,"ProSelect Merger - Policy - Rate Tables - MO - PPL/CPL, FPL, GL, EXU, EBL - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50272,Nidhi Benson,2020-10-20,23.0
-97,155,2020-07-22,"ProSelect Merger - Policy - Rate Tables - MO - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50273,Nidhi Benson,2020-10-20,19.0
-193,156,2020-07-23,Modus To Netcore - Billing - Company 10 Commission Accounts created for existing Agents,Siddharth Tiwari,Jonathan pinney,Manasi Bobade,50278,Siddharth Tiwari,2020-10-20,18.0
-194,157,2020-07-23,Billing -Omit blank agent statements with no activity from going to the Onbase workflow print queue,Jonathan pinney,Siddharth Tiwari,Manasi Bobade,50280,Jonathan pinney,2020-10-20,17.0
-249,158,2020-07-23,"Claim 141244 - Getting the ""Reserves specified is greater than available coverage"" when trying to set a reserve on the Wexford line",Arvind Prajapati,Manas Das,Swati Rastogi,50283,Arvind Prajapati,2020-10-20,27.0
-98,159,2020-07-27,Policy - Root Cause Fix for blank CYB schedules and missing class lines,Debidatta Dash,Divakar Kareddy,Nidhi Benson,50296,Debidatta Dash,2020-10-20,25.0
-99,160,2020-07-28,SMD Buy-up Premium not rating on LTC Risk,Matthew Murray,Debidatta Dash,Nidhi Benson,50305,Matthew Murray,2020-10-20,24.0
-100,161,2020-07-29,Policy - Change default of On Call field to No,Matthew Murray,Debidatta Dash,Nidhi Benson,50311,Matthew Murray,2020-10-20,24.0
-101,162,2020-07-30,"ProSelect Merger - Policy - Rate Tables - WA - PPL/CPL, FPL, GL, EXU, EBL - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50314,Nidhi Benson,2020-10-20,23.0
-102,163,2020-07-30,"ProSelect Merger - Policy - Rate Tables - WA - PPL/CPL, FPL, GL, EXU, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50315,Nidhi Benson,2020-10-20,19.0
-195,164,2020-07-30,Billing -  Event Hold Release  8-1-2020  -List of States attached,Jonathan pinney,Siddharth Tiwari,Manasi Bobade,50319,Jonathan pinney,2020-10-20,17.0
-103,165,2020-07-30,Policy - Root cause fix to track the the long term fix for the issue reported in 49961,Debidatta Dash,Prasad Chavri,Divakar Kareddy,50323,Debidatta Dash,2020-10-20,25.0
-104,166,2020-07-31,Min Prem not allocating correctly with shared limit,Debidatta Dash,Matthew Murray,Divakar Kareddy,50327,Debidatta Dash,2020-10-20,24.0
-105,167,2020-08-04,Policy - VBC - Validation Error on Limit field on VBC with user types in limit with more than 7 characters,Nidhi Benson,Prasad Chavri,Divakar Kareddy,50360,Nidhi Benson,2020-10-20,24.0
-106,168,2020-08-06,"ProSelect Merger - Policy - Rate Tables - RI - PPL/CPL, FPL, GL, EBL - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50369,Nidhi Benson,2020-10-20,24.0
-107,169,2020-08-06,"ProSelect Merger - Policy - Rate Tables - RI - PPL/CPL, FPL, GL, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50370,Nidhi Benson,2020-10-20,20.0
-250,170,2020-08-06,MODUS to NetCore:  Claim Conversion -- Add Company 007 and Company 008 for Full Claims Integration and Claims Handling,Arvind Prajapati,Swati Rastogi,Manas Das,50371,Arvind Prajapati,2020-10-20,23.0
-108,171,2020-08-06,Shred - Resolve duplicate for 009NY000018150,Debidatta Dash,Matthew Murray,Divakar Kareddy,50372,Debidatta Dash,2020-10-20,24.0
-109,172,2020-08-06,Policy - MinPrem - The MINPrem premium part is not being assigned a class code or ILC code,Matthew Murray,Debidatta Dash,Nidhi Benson,50376,Matthew Murray,2020-10-20,24.0
-251,173,2020-08-07,Deductible billing errors on Wexford policy 005IN000025545.Many claim lines incorrectly show NEGATIVE $982.05 Remaining Aggregate Deductible... This is an unlimited deductible agg so the Remaining Deductible Aggregate should always be zero or null,Swati Rastogi,Arvind Prajapati,Manas Das,50379,Swati Rastogi,2020-10-20,25.0
-252,174,2020-08-07,The four claim lines on Wexford claim 133203 (Policy 005IN000025545) have an incorrect Deductible profile DED000005AL0000255552019-04-012020-04-01FPL1PL which incorporates the policy # of another Wexford policy,Manas Das,Swati Rastogi,Arvind Prajapati,50380,Manas Das,2020-10-20,28.0
-110,175,2020-08-07,Xpertdoc - Create SQL Table to store record of forms w two stored procedures,Debidatta Dash,Matthew Murray,Divakar Kareddy,50387,Debidatta Dash,2020-10-20,22.0
-196,176,2020-08-07,Invoice File mismatch NetCore 003OH000010247,Siddharth Tiwari,Manasi Bobade,Nikita Mazgaonkar,50389,Siddharth Tiwari,2020-10-20,17.0
-111,177,2020-08-11,DF - CPL Risks posted to Billing as PPL Bill Item,Divakar Kareddy,Debidatta Dash,Matthew Murray,50426,Divakar Kareddy,2020-10-20,24.0
-112,178,2020-08-13,Policy - LA PCF - 8 Month Rule,Deepak Mane,Debidatta Dash,Nidhi Benson,50436,Deepak Mane,2020-10-20,25.0
-197,179,2020-08-14,Modus To Netcore - Billing - Fronted Business Main Ticket,Siddharth Tiwari,Jonathan pinney,Manasi Bobade,50445,Siddharth Tiwari,2020-10-20,16.0
-113,180,2020-08-14,Modus To Netcore - Policy - Additional requirements for commission and pay plan defaults,Divakar Kareddy,Debidatta Dash,Nidhi Benson,50446,Divakar Kareddy,2020-10-20,24.0
-198,181,2020-08-14,Modus To Netcore - Billing - NMIC Main Ticket,Siddharth Tiwari,Jonathan pinney,Manasi Bobade,50448,Siddharth Tiwari,2020-10-20,16.0
-114,182,2020-08-14,"ProSelect Merger - Policy - Rate Tables - OK - PPL/CPL, FPL, GL, EBL, EXU - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50458,Nidhi Benson,2020-10-20,23.0
-115,183,2020-08-14,PEXR report isn't pulling primary limit on any policies,Debidatta Dash,Nidhi Benson,Matthew Murray,50459,Debidatta Dash,2020-10-20,24.0
-116,184,2020-08-14,"ProSelect Merger - Policy - Rate Tables - OK - PPL/CPL, FPL, GL, EBL, EXU - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50460,Nidhi Benson,2020-10-20,19.0
-117,185,2020-08-16,"ProSelect Merger - Policy - Rate Tables - DC - PPL/CPL, FPL, GL, EBL - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50469,Nidhi Benson,2020-10-20,21.0
-118,186,2020-08-16,"ProSelect Merger - Policy - Rate Tables - DC - PPL/CPL, FPL, GL, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50470,Nidhi Benson,2020-10-20,19.0
-119,187,2020-08-18,New Marketing Read Only role with read only access,Debidatta Dash,Matthew Murray,Nidhi Benson,50486,Debidatta Dash,2020-10-20,24.0
-199,188,2020-08-19,Billing - When credit endorsements or cancellation credits are added to the policy the PIF is being partially reversed,Vibha Jain,Manasi Bobade,Siddharth Tiwari,50500,Vibha Jain,2020-10-20,17.0
-120,189,2020-08-20,"SHRED - Add field ""SIRLimit"" to the Coverage Table for EXU/EXM Risks",Debidatta Dash,Matthew Murray,Nidhi Benson,50507,Debidatta Dash,2020-10-20,18.0
-253,190,2020-08-21,Claims: Change the service benefit group to experts for SBT medical experts,Arvind Prajapati,Manas Das,Swati Rastogi,50508,Arvind Prajapati,2020-10-20,23.0
-121,191,2020-08-21,SHRED - Coverage Table - populate SIRLimit once ticket # 50507 is completed (Data Fix),Debidatta Dash,Matthew Murray,Divakar Kareddy,50510,Debidatta Dash,2020-10-20,21.0
-200,192,2020-08-21,Billing - RePost PRODUCTION  8/15 Comm Statements to Onbase,Jonathan pinney,Siddharth Tiwari,Manasi Bobade,50511,Jonathan pinney,2020-10-20,17.0
-201,193,2020-08-21,Billing - Production Invoice Failed to post to Onbase,Jonathan pinney,Siddharth Tiwari,Nikita Mazgaonkar,50512,Jonathan pinney,2020-10-20,20.0
-122,194,2020-08-21,Data Fix - Merged Policy and Quote 003OH000020498 and Q53649-01,Debidatta Dash,Divakar Kareddy,Prasad Chavri,50513,Debidatta Dash,2020-10-20,24.0
-123,195,2020-08-21,Policy - Merged Policies - Root Cause,Debidatta Dash,Divakar Kareddy,Nidhi Benson,50514,Debidatta Dash,2020-10-20,24.0
-254,196,2020-08-21,Claims: Technical difficulties error on claim 146836 when doing a policy attach to change to the 7/1/2020 - 7/1/2021 policy period,Arvind Prajapati,Manas Das,Swati Rastogi,50515,Arvind Prajapati,2020-10-20,24.0
-124,197,2020-08-24,Policy - Change Bill To Address button on applicant page - Error,Debidatta Dash,Matthew Murray,Divakar Kareddy,50518,Debidatta Dash,2020-10-20,25.0
-255,198,2020-08-24,Policy SnapShot - MODUS to NetCore claims conversion and post 1/1/2021 new claim utilizing MODUS data,Swati Rastogi,Arvind Prajapati,Manas Das,50520,Swati Rastogi,2020-10-20,27.0
-125,199,2020-08-25,Policy - New country fields not updating in Policy,Debidatta Dash,Matthew Murray,Divakar Kareddy,50522,Debidatta Dash,2020-10-20,24.0
-126,200,2020-08-25,Policy - CYB Tail risk is incorrectly made when renewing a definite tail,Debidatta Dash,Matthew Murray,Divakar Kareddy,50529,Debidatta Dash,2020-10-20,26.0
-202,201,2020-08-25,"Need to create deductible Billing records in Billing module for payments on claims 142429 & 143633, Ded Acct 003DED0000106334, Policy # 003OH000021346.  Other claim payments  on same policy produced Deductible billing records",Vibha Jain,Siddharth Tiwari,Manasi Bobade,50530,Vibha Jain,2020-10-20,17.0
-203,202,2020-08-25,"Root Cause -- Payments on claims 142429 and 143633, on policy 003OH000021346 eff 1/1/20 are not creating transactions in the Billing module even though deductible SBT transactions are created in Claims module",Vibha Jain,Manasi Bobade,Siddharth Tiwari,50531,Vibha Jain,2020-10-20,17.0
-127,203,2020-08-25,"ProSelect Merger - Policy - Rate Tables - FL - PPL/CPL, FPL, GL, EBL - expire AvailableProductsBasedOnStateAndCompany PENDING APPROVAL",Nidhi Benson,Matthew Murray,Divakar Kareddy,50533,Nidhi Benson,2020-10-20,24.0
-128,204,2020-08-25,"ProSelect Merger - Policy - Rate Tables - FL - PPL/CPL, FPL, GL, EBL - un-expire AvailableProductsBasedOnStateAndCompany",Nidhi Benson,Matthew Murray,Divakar Kareddy,50534,Nidhi Benson,2020-10-20,20.0
-129,205,2020-08-25,VBC Policy - Add the ability to enter VBC shell policy into NetCore Policy,Nidhi Benson,Matthew Murray,Debidatta Dash,50535,Nidhi Benson,2020-10-20,24.0
-130,206,2020-08-25,"Party - Non-USA Zip Code Format - United Kingdom, Germany and Canada",Debidatta Dash,Nidhi Benson,Matthew Murray,50536,Debidatta Dash,2020-10-20,16.0
-131,207,2020-08-25,Party - non-USA Countries - Bermuda - city not required,Divakar Kareddy,Debidatta Dash,Matthew Murray,50537,Divakar Kareddy,2020-10-20,16.0
-132,208,2020-08-26,"Policy - Policy Details page address does not reflect address on policy, it only shows the default address for the party",Divakar Kareddy,Debidatta Dash,Nidhi Benson,50540,Divakar Kareddy,2020-10-20,24.0
-133,209,2020-08-26,Policy - Data fix for 50173 Merged parties,Debidatta Dash,Prasad Chavri,Divakar Kareddy,50541,Debidatta Dash,2020-10-20,17.0
-134,210,2020-08-26,AC Product - Need to remove the Additional Coverages header and drop down,Nidhi Benson,Debidatta Dash,Divakar Kareddy,50542,Nidhi Benson,2020-10-20,24.0
-256,211,2020-08-27,"Claims:  Coverage Match, Need to exclude all Suspended Coverages from search results.",Manas Das,Arvind Prajapati,Swati Rastogi,50552,Manas Das,2020-10-20,30.0
-204,212,2020-08-27,Billing - Table Update Black Out Dates for 2021 - Data Fix,Jonathan pinney,Siddharth Tiwari,Vibha Jain,50553,Jonathan pinney,2020-10-20,16.0
-205,213,2020-08-28,Billing - 8/26 Lockbox File issue - Payment Batch stuck in I status,Siddharth Tiwari,Vibha Jain,Manasi Bobade,50559,Siddharth Tiwari,2020-10-20,16.0
-257,214,2020-08-28,"OnBase claims: When importing documents and emails and entering in a claim number where Susan smith is the claim owner, the CLM-Owner field only populates with an 'S'",Arvind Prajapati,Swati Rastogi,Manas Das,50563,Arvind Prajapati,2020-10-20,28.0
-258,215,2020-08-28,"OnBase Claims: When importing documents on a claim that is on company 5 or 6, the company field is populated with 005 or 006 instead of the company name",Arvind Prajapati,Manas Das,Swati Rastogi,50564,Arvind Prajapati,2020-10-20,21.0
-259,216,2020-08-29,Claim #135710 - Check #26259 status did not update in NetCore,Arvind Prajapati,Manas Das,Swati Rastogi,50568,Arvind Prajapati,2020-10-20,29.0
-206,217,2020-09-01,Additional ACH Negative Balance Issues,Siddharth Tiwari,Manasi Bobade,Vibha Jain,50577,Siddharth Tiwari,2020-10-20,18.0
-135,218,2020-09-02,Policy - Addresses - Puerto Rico reverting to AK on policy side,Debidatta Dash,Divakar Kareddy,Matthew Murray,50581,Debidatta Dash,2020-10-20,25.0
-136,219,2020-09-02,Policy - Tail Rate Effective Date error if date before earliest manuscript date is used,Matthew Murray,Debidatta Dash,Nidhi Benson,50584,Matthew Murray,2020-10-20,24.0
-260,220,2020-09-02,Claims: Technical difficulties error when trying to access claim 112778,Arvind Prajapati,Swati Rastogi,Manas Das,50585,Arvind Prajapati,2020-10-20,28.0
-137,221,2020-09-02,Party - Name - Character Length - System Counting Incorrectly,Debidatta Dash,Matthew Murray,Nidhi Benson,50586,Debidatta Dash,2020-10-20,20.0
-261,222,2020-09-02,Claims: Not able to create a F&C letter on claim 107904.  Selected several templates and an error occurs when clicking continue,Arvind Prajapati,Swati Rastogi,Manas Das,50587,Arvind Prajapati,2020-10-20,24.0
-207,223,2020-09-03,"BILLING - Tracking Ticket for Ongoing Intermittent Authority Level Issues for Write Offs, etc. (SF 00103378)",Siddharth Tiwari,Jonathan pinney,Manasi Bobade,50589,Siddharth Tiwari,2020-10-20,16.0
-138,224,2020-09-03,NetCore - Policy - Error when searching by Client Name,Debidatta Dash,Nidhi Benson,Matthew Murray,50596,Debidatta Dash,2020-10-20,30.0
-139,225,2020-09-08,"Policy - pending cancellation transaction committed, cannot reinstate 001MA000000793",Debidatta Dash,Nidhi Benson,Prasad Chavri,50618,Debidatta Dash,2020-10-20,24.0
-208,226,2020-09-08,Modus To Netcore - Billing - Assumed Reinsurance,Siddharth Tiwari,Manasi Bobade,Jonathan pinney,50625,Siddharth Tiwari,2020-10-20,16.0
-209,227,2020-09-09,Modus To Netcore - Billing - Co 007 Deductibles,Siddharth Tiwari,Manasi Bobade,Jonathan pinney,50629,Siddharth Tiwari,2020-10-20,17.0
-140,228,2020-09-10,Policy - EXU Risk error when going into EXU risk details on renewal,Debidatta Dash,Nidhi Benson,Divakar Kareddy,50644,Debidatta Dash,2020-10-20,27.0
-141,229,2020-09-10,Policy - QA Testing - West State EAI Error on EPL Tails,Prasad Chavri,Debidatta Dash,Matthew Murray,50646,Prasad Chavri,2020-10-20,24.0
-142,230,2020-09-11,Policy - Policies with Same History ID - root cause,Debidatta Dash,Divakar Kareddy,Matthew Murray,50647,Debidatta Dash,2020-10-20,25.0
-143,231,2020-09-11,Policy - Data fix for 50467 - Policies with same history id,Debidatta Dash,Matthew Murray,Divakar Kareddy,50648,Debidatta Dash,2020-10-20,26.0
-144,232,2020-09-12,ProSelect Merger - Rate Tables - Available Products,Matthew Murray,Nidhi Benson,Divakar Kareddy,50660,Matthew Murray,2020-10-20,24.0
-145,233,2020-09-12,Modus to NetCore - AC Product - Tails getting wrong ILC,Matthew Murray,Divakar Kareddy,Debidatta Dash,50664,Matthew Murray,2020-10-20,24.0
-146,234,2020-09-14,Policy - Suffix is not pulling into NetCore consistently,Debidatta Dash,Nidhi Benson,Divakar Kareddy,50667,Debidatta Dash,2020-10-20,18.0
-147,235,2020-09-14,Party - License Status - Should not default to other,Prasad Chavri,Debidatta Dash,Nidhi Benson,50668,Prasad Chavri,2020-10-20,16.0
-148,236,2020-09-15,Policy - New Quote - Applicant Page - AK defaulting as State,Nidhi Benson,Debidatta Dash,Divakar Kareddy,50677,Nidhi Benson,2020-10-20,24.0
-149,237,2020-09-15,Policy - Kansas PCF - Remove calculate button from CPL,Deepak Mane,Divakar Kareddy,Nidhi Benson,50680,Deepak Mane,2020-10-20,18.0
-262,238,2020-09-16,Claims - Getting technical error on claims home page (SF 88504),Arvind Prajapati,Swati Rastogi,Manas Das,50688,Arvind Prajapati,2020-10-20,27.0
-210,239,2020-09-16,Billing - Invoice or agent copies missing from onbase workflow queue,Siddharth Tiwari,Nikita Mazgaonkar,Jonathan pinney,50689,Siddharth Tiwari,2020-10-20,21.0
-211,240,2020-09-16,Billing - Automatically upload Invoice File via SFTP,Siddharth Tiwari,Jonathan pinney,Nikita Mazgaonkar,50692,Siddharth Tiwari,2020-10-20,17.0
-212,241,2020-09-17,Invoice File mismatch NetCore 002NJ000006741,Siddharth Tiwari,Manasi Bobade,Nikita Mazgaonkar,50696,Siddharth Tiwari,2020-10-20,17.0
-263,242,2020-09-17,Claims: Increase the character limit of the claim history description column,Arvind Prajapati,Swati Rastogi,Manas Das,50697,Arvind Prajapati,2020-10-20,25.0
-264,243,2020-09-17,Claims: Error when trying to close claim 139408,Arvind Prajapati,Swati Rastogi,Manas Das,50698,Arvind Prajapati,2020-10-20,28.0
-150,244,2020-09-18,Policy - Increase the length of “State” column from “2” to ‘50’ in “ClaimPolicySearch” table,Debidatta Dash,Divakar Kareddy,Matthew Murray,50702,Debidatta Dash,2020-10-20,23.0
-265,245,2020-09-18,Clean up null Loss County claims with a valid Loss ZIP Code.,Manas Das,Arvind Prajapati,Swati Rastogi,50708,Manas Das,2020-10-20,28.0
-266,246,2020-09-19,IS4W PolicySnapshot - Create File to identify Coverage Attributes not identified in IS4W,Swati Rastogi,Arvind Prajapati,Manas Das,50709,Swati Rastogi,2020-10-20,24.0
-151,247,2020-09-21,Shred - Policies failing to shred due to Value PFMGXV not valid for policy type,Debidatta Dash,Matthew Murray,Divakar Kareddy,50713,Debidatta Dash,2020-10-20,24.0
-152,248,2020-09-21,Policy - Tail Terms blank - Add validation to rate tables for all states,Debidatta Dash,Deepak Mane,Matthew Murray,50714,Debidatta Dash,2020-10-20,27.0
-153,249,2020-09-21,ProSelect Merger - Policy - Rate Tables - Medical Base US - add EAIFactor to 004PrimaryMaster,Deepak Mane,Nidhi Benson,Divakar Kareddy,50715,Deepak Mane,2020-10-20,25.0
-267,250,2020-09-22,Claims Data Fix for -  Policies Rewritten / Cancelled and Reinstated / Cancelled and Reissued -- Remove the CANCEL DATE:,Arvind Prajapati,Manas Das,Swati Rastogi,50722,Arvind Prajapati,2020-10-20,22.0
-268,251,2020-09-22,"Claims:  On Policy Search and select during Claims FNOL, display error Details from Policy instead of generic error",Manas Das,Arvind Prajapati,Swati Rastogi,50731,Manas Das,2020-10-20,29.0
-269,252,2020-09-23,Claim Number:  136201 - Closed Claim - Unknown Participant,Arvind Prajapati,Swati Rastogi,Manas Das,50736,Arvind Prajapati,2020-10-20,29.0
-270,253,2020-09-23,ImageRight to OnBase:  Synchronize OnBase PROD and DEV --There are definitely differences,Arvind Prajapati,Swati Rastogi,Manas Das,50739,Arvind Prajapati,2020-10-20,21.0
-271,254,2020-09-23,Claims: For the sexual misconduct defense coverage line type make the 'no coverage' line indicator available as an option in the drop down.,Arvind Prajapati,Manas Das,Swati Rastogi,50740,Arvind Prajapati,2020-10-20,29.0
-154,255,2020-09-23,Policy - CPL corporate member schedule - MLT and FTCA hours are not pulling into risk schedule when importing PPLs to CPLs,Debidatta Dash,Divakar Kareddy,Matthew Murray,50742,Debidatta Dash,2020-10-20,25.0
-155,256,2020-09-23,Policy - CYB displaying as VBC product on policy details page - shred failures,Divakar Kareddy,Matthew Murray,Nidhi Benson,50745,Divakar Kareddy,2020-10-20,27.0
-272,257,2020-09-24,Billing – Event Hold Release 9-26-2020 – List of States attached,Swati Rastogi,Arvind Prajapati,Manas Das,50747,Swati Rastogi,2020-10-20,24.0
-156,258,2020-09-24,"Policy - Rate Tables - VA - PPL_CPL, FPL & GL - Add ILF 2.45M/12.25M (666)",Nidhi Benson,Deepak Mane,Prasad Chavri,50752,Nidhi Benson,2020-10-20,22.0
-273,259,2020-09-24,Claims: Need to delete a receipt created on 8/7/2020 that has not been batched or reconciled $560.10,Swati Rastogi,Arvind Prajapati,Manas Das,50755,Swati Rastogi,2020-10-20,28.0
-157,260,2020-09-24,Policy - Cannot start renewal of 002NH000016052 due to error,Debidatta Dash,Matthew Murray,Prasad Chavri,50757,Debidatta Dash,2020-10-20,31.0
-158,261,2020-09-24,Policy - Shred changes for 50702 - Increase the length of “State” column from “2” to ‘50’,Divakar Kareddy,Debidatta Dash,Matthew Murray,50759,Divakar Kareddy,2020-10-20,25.0
-274,262,2020-09-25,"Claims: When entering in the zip code on the claim - loss location section, the county should auto populate",Arvind Prajapati,Manas Das,Swati Rastogi,50760,Arvind Prajapati,2020-10-20,24.0
-275,263,2020-09-25,Claims: Reconciliation of limit & deductible is pending on 148099 claim(s) error message when trying to coverage match claims 148118 & 148121,Arvind Prajapati,Swati Rastogi,Manas Das,50762,Arvind Prajapati,2020-10-20,24.0
-159,264,2020-09-25,ProSelect Merger - LA PCF - Add D.O. class codes (84xxx) to the PCFClassCodesMapping table,Deepak Mane,Matthew Murray,Nidhi Benson,50763,Deepak Mane,2020-10-20,19.0
-160,265,2020-09-25,ProSelect Merger - CSIC - LA PCF - Add D.O. class codes (84xxx) to the PCFClassCodesMapping table,Deepak Mane,Prasad Chavri,Nidhi Benson,50764,Deepak Mane,2020-10-20,19.0
-161,266,2020-09-25,"ProSelect Merger - Policy - Rate Tables - IA, ID, IN, MI, MN, NE, OR, SD, WA, WI - Medical - update coverage limits and deductible limits",Deepak Mane,Matthew Murray,Nidhi Benson,50770,Deepak Mane,2020-10-20,25.0
-162,267,2020-09-25,ProSelect Merger - Policy - Embedded coverages and deductibles for MW and W states,Matthew Murray,Nidhi Benson,Divakar Kareddy,50771,Matthew Murray,2020-10-20,25.0
-276,268,2020-09-25,Policy Attach Service Error - Dev06,Manas Das,Swati Rastogi,Arvind Prajapati,50774,Manas Das,2020-10-20,25.0
-163,269,2020-09-28,Policy - Rating - FPL risk at Minimum Premium - cancel and reinstate do not match,Matthew Murray,Nidhi Benson,Prasad Chavri,50791,Matthew Murray,2020-10-20,24.0
-164,270,2020-09-28,"Policy - Data Fix - for ticket 50791 - FPL min prem , delete risk midterm, cancel and reinstate mismatch",Divakar Kareddy,Debidatta Dash,Matthew Murray,50792,Divakar Kareddy,2020-10-20,24.0
-165,271,2020-09-28,"Policy - Rating - All Products - When issued at minimum premium, then deleted midterm, the term and written premium should not match",Matthew Murray,Debidatta Dash,Nidhi Benson,50793,Matthew Murray,2020-10-20,24.0
-166,272,2020-09-28,Policy - Data Fix - for Ticket #50793:,Debidatta Dash,Prasad Chavri,Divakar Kareddy,50794,Debidatta Dash,2020-10-20,24.0
-167,273,2020-09-28,"Policy - KY Surcharge - If the risk premium is retained on a cancel/delete, then the surcharge change premium should be $0",Debidatta Dash,Matthew Murray,Nidhi Benson,50795,Debidatta Dash,2020-10-20,24.0
-168,274,2020-09-28,Policy - Locum Tenens CA PA - Cyber (CPP) Risk Shouldn't be on Ppolicy,Debidatta Dash,Matthew Murray,Nidhi Benson,50797,Debidatta Dash,2020-10-20,24.0
-213,275,2020-09-28,Unable to Add New Commission Plan with future Inception Date,Manasi Bobade,Vibha Jain,Siddharth Tiwari,50798,Manasi Bobade,2020-10-20,16.0
-214,276,2020-09-29,SQL Script needed to Add new Nevada Mutual Tail Commission Plan,Manasi Bobade,Vibha Jain,Siddharth Tiwari,50803,Manasi Bobade,2020-10-20,17.0
-277,277,2020-09-29,"HU claim conversion issue -- Incorrect payment amount on one of the transactions for Claim OH0372 (Payment amount appears as $1,638.45 but should be $1,683.45)",Manas Das,Swati Rastogi,Arvind Prajapati,50804,Manas Das,2020-10-20,21.0
+,index,CreatedDate,Title,Developer1,Developer2,Developer3,ID,Recommended,Estimate
+22,0,2020-05-08,Billing - Premium Invoices missing detail information on page 2 of invoice,Parker Billing,Scott Billing,Mary Billing,49734,Parker Billing,22.0
+23,1,2020-06-09,Billing -Add the billing email address to current billing documents for all Companies in Netcore,Mary Billing,Scott Billing,Strange Billing,49926,Mary Billing,16.0
+0,2,2020-06-23,Policy - Dividend not calculating properly on 001MA000003249,Ned Policy,Tony Policy,Arya Policy,50011,Ned Policy,25.0
+1,3,2020-06-23,"Policy - Agency Billed payment plans are cleared out with Referrals, and they do not carry over at Renewal",Tony Policy,Arya Policy,Rogers Policy,50016,Tony Policy,25.0
+2,4,2020-06-30,Policy - Back to Pending button missing after referral is approved,Tony Policy,Ned Policy,Arya Policy,50079,Tony Policy,24.0
+3,5,2020-07-21,Modus to NetCore - Xpertdoc - New Coverys_Rules table on cov-xdoc-sql-d and -p,Tony Policy,Ned Policy,Smith Policy,50250,Tony Policy,22.0
+4,6,2020-07-22,Policy - Temporary fix to prevent transactions from being bound when Cyber schedules and class lines are blank,Tony Policy,Ned Policy,Rogers Policy,50260,Tony Policy,22.0
+5,7,2020-07-22,MCWAH - Performance Issues on Pending Renewal - Deleted Providers during renewal reappear,Ned Policy,Tony Policy,Rogers Policy,50266,Ned Policy,24.0
+24,8,2020-07-23,Billing -Omit blank agent statements with no activity from going to the Onbase workflow print queue,Strange Billing,Scott Billing,Mary Billing,50280,Strange Billing,17.0
+6,9,2020-07-27,Policy - Root Cause Fix for blank CYB schedules and missing class lines,Tony Policy,Rogers Policy,Ned Policy,50296,Tony Policy,25.0
+29,10,2020-08-07,Deductible billing errors on Wexford policy 005IN000025545.Many claim lines incorrectly show NEGATIVE $982.05 Remaining Aggregate Deductible... This is an unlimited deductible agg so the Remaining Deductible Aggregate should always be zero or null,Emma Claims,Jon Claims,Steve Claims,50379,Emma Claims,25.0
+7,11,2020-08-21,Data Fix - Merged Policy and Quote 003OH000020498 and Q53649-01,Tony Policy,Robert Policy,Ned Policy,50513,Tony Policy,24.0
+8,12,2020-09-10,Policy - EXU Risk error when going into EXU risk details on renewal,Tony Policy,Rogers Policy,Arya Policy,50644,Tony Policy,28.0
+25,13,2020-09-16,Billing - Invoice or agent copies missing from onbase workflow queue,Scott Billing,Strange Billing,Holland Billing,50689,Scott Billing,20.0
+9,14,2020-09-23,Policy - CPL corporate member schedule - MLT and FTCA hours are not pulling into risk schedule when importing PPLs to CPLs,Ned Policy,Tony Policy,Rogers Policy,50742,Ned Policy,25.0
+10,15,2020-09-24,Policy - Cannot start renewal of 002NH000016052 due to error,Tony Policy,Ned Policy,Rogers Policy,50757,Tony Policy,29.0
+30,16,2020-09-25,Claims: Reconciliation of limit & deductible is pending on 148099 claim(s) error message when trying to coverage match claims 148118 & 148121,Jon Claims,Emma Claims,Stark Claims,50762,Jon Claims,18.0
+11,17,2020-10-01,Policy Merge including Billing - Policy 002NJ000023612 - Data Fix,Tony Policy,Ned Policy,Rogers Policy,50825,Tony Policy,29.0
+31,18,2020-10-06,"MODUS to NetCore Claim Conversion: 1,000 DEV06 Test Claims with Policy Attach Error “Technical error occurred while Policy Attach”",Stark Claims,Jon Claims,Emma Claims,50848,Stark Claims,24.0
+26,19,2020-10-06,Billing - Vaaler Agency Statements not generating - Root Cause fix follow-up,Scott Billing,Strange Billing,Parker Billing,50849,Scott Billing,16.0
+32,20,2020-10-07,POLICY - DATA FIX - Update missing data on the Policy Search Tables (data fix for 50856),Stark Claims,Emma Claims,Jon Claims,50850,Stark Claims,24.0
+12,21,2020-10-07,"Policy - QA Testing - Error on Pricing Page when leaving the auto-reated tail ""quote"" risk",Ned Policy,Tony Policy,Arya Policy,50854,Ned Policy,25.0
+13,22,2020-10-07,CoverageExpirationDate_uptd & ExtendedCoverageExpirationDate_uptd values are Null for most of the coverages impacting policy search in claims,Robert Policy,Tony Policy,Ned Policy,50856,Robert Policy,24.0
+14,23,2020-10-08,Poliy - Data Fix - Merge 003MI000020675 and Q52643-01,Tony Policy,Robert Policy,Rogers Policy,50861,Tony Policy,25.0
+15,24,2020-10-08,"ProSelect Merger - Policy - Rate Tables - OK - EBL, EXU, EXM - un-expire AvailableProductsBasedOnStateAndCompany",Rogers Policy,Tom RateTable,Ned Policy,50862,Rogers Policy,23.0
+33,25,2020-10-08,"Claims: ~6300  history records were soft deleted on the 2nd of October all with a C_EVT_NBR of 906,903, or 71, and nearly all with a description containing ‘% status changed from Open to Closed.’",Jon Claims,Stark Claims,Emma Claims,50864,Jon Claims,22.0
+34,26,2020-10-09,"MODUS to NetCore Claim Conversion:  EDW Test Site to Point to DEV06 Claims (Omaha Conversion Test Site) / EDW Load to be ""Fired Off"" on an Ad Hoc Basis",Jon Claims,Stark Claims,Emma Claims,50869,Jon Claims,22.0
+35,27,2020-10-09,MODUS to NetCore Conversion:  Claims - Add New Coverage of  'EXUPPIC' to Claims for integration and handling,Jon Claims,Stark Claims,Steve Claims,50870,Jon Claims,18.0
+36,28,2020-10-10,MODUS to NetCore Conversion:  Claims-Add New Field with List of Values to Claims Policy Page--Fronted Program Name,Steve Claims,Jon Claims,Emma Claims,50872,Steve Claims,27.0
+16,29,2020-10-14,KS PCF - Changes needed for CPL and FPL for Forms Issuance,Smith Policy,Ned Policy,Tony Policy,50883,Smith Policy,24.0
+37,30,2020-10-14,Claim Number 16296M - Closing claim with date of 5-29-2013,Emma Claims,Jon Claims,Stark Claims,50887,Emma Claims,30.0
+27,31,2020-10-14,Billing - Balancing -  Process missing transactions for policy 002PA000018161,Parker Billing,Mary Billing,Scott Billing,50888,Parker Billing,16.0
+38,32,2020-10-14,"Claims:  Once Cyber fix is moved to Production, this ticket will be used to remove the code implemented in 50871 to exclude Cyber coverage in Claims.",Jon Claims,Emma Claims,Stark Claims,50892,Jon Claims,23.0
+17,33,2020-10-15,ProSelect Merger - Policy - Rate Tables - Medical Base - updates needed to add Security and Protection,Rogers Policy,Tom RateTable,Ned Policy,50893,Rogers Policy,24.0
+18,34,2020-10-15,Policy - New Mexico (NM) PCF Fund PT Credit Calculating Incorrectly,Smith Policy,Rogers Policy,Ned Policy,50900,Smith Policy,25.0
+19,35,2020-10-16,Policy - Data Fix for 50745 - VBC as CYB display,Ned Policy,Rogers Policy,Tony Policy,50903,Ned Policy,26.0
+20,36,2020-10-16,"ProSelect Merger - Policy - Rate Tables - LA - GL, EBL, EXU - un-expire AvailableProductsBasedOnStateAndCompany",Rogers Policy,Tom RateTable,Ned Policy,50910,Rogers Policy,18.0
+21,37,2020-10-16,"Policy - Data Fix - Merged Policies 001MA000008011, 003MI000001425, 002NJ000009557",Tony Policy,Robert Policy,Ned Policy,50915,Tony Policy,25.0
+39,38,2020-10-16,MODUS to NetCore Conversion:  Claims - Add New Coverages of  'PK' and 'BP' to Claims for integration and handling,Jon Claims,Steve Claims,Stark Claims,50916,Jon Claims,25.0
+28,39,2020-10-19,003OH000007284 Robert Denton invoice missing from billing and Onbase,Scott Billing,Mary Billing,Holland Billing,50925,Scott Billing,18.0

@@ -54,6 +54,28 @@ def store_data(table,df,if_exist='append'):
         print(e)
         return e
 
+def availableTime():
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    try:
+        settingsquery="Exec GetAvailableHours"
+        #cursor = connection.cursor()
+        #cursor.execute(settingsquery)
+        #print(cursor)
+        df=pd.read_sql(settingsquery,connection)
+        dev=pd.read_sql("select DE.EMPName as Name from [dbo].[tbl_Employee] E inner join tbl_DCTEmployee DE on E.EmpID=DE.EmpID inner join tbl_Profiles P on E.Profile=P.ID where P.ID=1",connection)
+        dev['Availablehours']=180
+        #print(df.head())
+        # connection.commit()
+        # rows=cursor.fetchall()
+        # print(rows)
+        connection.close()
+        return df,dev
+    except Exception as e:
+        return pd.DataFrame({}),pd.DataFrame({})
+
 def pull_data():
     if(production):
         connection=pyodbc.connect(connection_string)
@@ -169,7 +191,7 @@ def getticket_databyId(id):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    getticketquery=TKTS_QUERY_BYID +" where Id="+str(id)
+    getticketquery="SELECT th.ID,th.Title,th.State,th.Developer,th.Module,th.Severity,th.Tester,th.CreatedDate,th.RootCause,th.Estimate,tp.Project,th.Complexity,th.Resolution FROM [dbo].[TicketHistory] th inner join tbl_Projects tp on th.Project_Id=tp.ID where th.ID="+str(id)
     df=pd.read_sql(getticketquery,connection)
     df1=df.copy()
     df1['CreatedDate']=pd.to_datetime(df1['CreatedDate']).dt.strftime('%Y-%m-%d')
@@ -196,7 +218,7 @@ def getDataFromRecommnedations():
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    df=pd.read_sql(RECOMMENDED_TICKETS,connection)
+    df=pd.read_sql("select * from RecommendationsData",connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     #print(df.head())
@@ -288,7 +310,7 @@ def get_ticket_byId(id):
     else:
         connection=pyodbc.connect(connection_string_local)
     #df=pd.read_sql(latestquery+"where Id="+str(id),connection)
-    recomquery=RECOMMENDED_TICKETS+" where Id="+str(id)
+    recomquery=RECOMMENDED_TICKETS+" where R.ID="+str(id)
     df=pd.read_sql(recomquery,connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
@@ -333,15 +355,16 @@ def format_response(final_df,type='recommended'):
     #res=final_df
     return res
 
-def latest_defect():
+def latest_defect(projectId):
     if(production):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    df=pd.read_sql(latestquery,connection)
+    print("In latest tickets",projectId)
+    df=pd.read_sql(latestquery+' and Project_Id='+str(projectId)+" and Sprint='sprint2'",connection)
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
-    #print(df.head())
+    print(df.head())
     return df
 
 def paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc):

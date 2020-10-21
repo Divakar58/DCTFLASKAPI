@@ -194,7 +194,6 @@ def visualize():
     pie['drilllabels']=devp
     pie['drillvalues']=sevl
 
-
     defectsdata={}
     df=visualdataframe.copy()
 
@@ -264,21 +263,42 @@ def predict():
     return {"results":list(res),"pagesize":int(ticketscount.iloc[0])}
     #return Response(result,mimetype='application/json')
 
+@app.route('/available',methods=['POST','GET'])
+def available():
+    availableTime()
+    return {'results':'success'}
+
+@app.route('/chatbot',methods=['POST','GET'])
+def chatbot():
+    search=request.args.get('title',default='',type=str)
+    dataframe=pull_data()
+    dataframe['similarityscore']=dataframe['Title'].apply(lambda x:fuzz.token_sort_ratio(x,search))
+    print(dataframe.head(20))
+    dataframe.sort_values(by='similarityscore',ascending=False,inplace=True)
+    #print(SIMILARITY_PERCENT)
+    data=dataframe[dataframe['similarityscore']>35].copy().reset_index()
+    #print(data[['ID','Title','Developer','Resolution']].head())
+    data['ID']=data['ID'].apply(lambda x:int(x))
+    return str(data[['ID','Title','Developer','Resolution']].to_html())
 ###########################  ----- View ----#####################
 @app.route('/recommendations',methods=['POST','GET'])
 def view():
-    ticketdata=latest_defect()
+    projectId=request.args.get('projectid',default=0,type=int)
+    ticketdata=latest_defect(projectId)#sprint
     print("Before Prediction in recommendations")
     global tickets
     tickets=len(ticketdata.index)
-    result=prediction(ticketdata)
-    #prediction(ticketdata)
-    print("After Prediction")
-    print(result)
-    if(result=="sucess"):
-        return {'message':'success'}
+    if(len(ticketdata.index)>0):
+        result=prediction(ticketdata,projectId)
+        #prediction(ticketdata)
+        print("After Prediction")
+        print(result)
+        if(result=="success"):
+            return {'results':'success'}
+        else:
+            return {'results':'error'}
     else:
-        return {'message':'error'}
+        return {'results':'nodata'}
     #return {"results":result},200 if result=="sucess" else 500 
 
 ###########################  ----- Update ----#####################
@@ -465,7 +485,7 @@ def uploadFile():
                 if(New):
                     if('.xlsx' in file.filename or '.xls' in file.filename):
                         df=pd.read_excel(file.filename)
-                        df_old=latest_defect()
+                        df_old=latest_defect(project)
                         df=pd.concat([df_old,df])
                         df['Project_Id']=project
                         df.drop_duplicates(inplace=True)
@@ -474,11 +494,11 @@ def uploadFile():
                         df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
                         #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
                         store_data('TFSTicketsData',df,'replace')
-                        prediction(latest_defect(),project,store=True)
+                        prediction(latest_defect(project),project,store=True)
                     elif('.csv' in file.filename):
                         print(file.filename)
                         df=pd.read_csv(file.filename)
-                        df_old=latest_defect()
+                        df_old=latest_defect(project)
                         df=pd.concat([df_old,df])
                         df['Project_Id']=project
                         df.drop_duplicates(inplace=True)
@@ -487,7 +507,7 @@ def uploadFile():
                         df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
                         #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
                         store_data('TFSTicketsData',df,'replace')
-                        prediction(latest_defect(),project,store=True)
+                        prediction(latest_defect(project),project,store=True)
                 else:
                     if('.xlsx' in file.filename or '.xls' in file.filename):
                         df=pd.read_excel(file.filename)
