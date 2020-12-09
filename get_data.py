@@ -18,9 +18,11 @@ production=ast.literal_eval(os.environ.get("PRODUCTION"))
 connection_string=os.environ.get("CONNECTION_STRING")
 connection_string_local=os.environ.get("CONNECTION_STRING_LOCAL")
 query=os.environ.get("TKTS_QUERY")
+backlogquery=os.environ.get("TKTS_QUERY_BKLG")
 latestquery=os.environ.get("LATEST_TICKETS")
 CLOSED_TICKETS=os.environ.get("CLOSED_TICKETS")
 currentdevelopers=os.environ.get("CURRENT_DEVELOPERS")
+currenttesters=os.environ.get("CURRENT_TESTERS")
 TKTS_QUERY_BYID=os.environ.get("TKTS_QUERY_BYID")
 RECOMMENDED_TICKETS=os.environ.get("RECOMMENDED_TICKETS")
 SETTINGS=os.environ.get("SETTINGS")
@@ -54,26 +56,44 @@ def store_data(table,df,if_exist='append'):
         print(e)
         return e
 
-def availableTime():
+def store_ptodata(table,df,if_exist='append'):
+    print("storingdata")
+    try:
+        print("In exception")
+        if(production):
+            quoted = urllib.parse.quote_plus(connection_string)
+        else:
+            quoted = urllib.parse.quote_plus(connection_string_local)
+        engine = create_engine('mssql+pyodbc:///?odbc_connect={}'.format(quoted))
+        df.drop_duplicates(inplace=True)
+        print("Instoring data",df.head())
+        df.to_sql(table, schema='dbo', con = engine, if_exists=if_exist)
+    except Exception as e:
+        print(e)
+        return e
+
+def availableTime(profileID=1):
     if(production):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
     try:
+        #print("IN aviable time")
         settingsquery="Exec GetAvailableHours"
         #cursor = connection.cursor()
         #cursor.execute(settingsquery)
         #print(cursor)
         df=pd.read_sql(settingsquery,connection)
-        dev=pd.read_sql("select DE.EMPName as Name from [dbo].[tbl_Employee] E inner join tbl_DCTEmployee DE on E.EmpID=DE.EmpID inner join tbl_Profiles P on E.Profile=P.ID where P.ID=1",connection)
+        dev=pd.read_sql("select DE.EMPName as Name from [dbo].[tbl_Employee] E inner join tbl_DCTEmployee DE on E.EmpID=DE.EmpID inner join tbl_Profiles P on E.Profile=P.ID where P.ID="+str(profileID),connection)
         dev['Availablehours']=180
-        #print(df.head())
+        print("AvailableTime",dev.head())
         # connection.commit()
         # rows=cursor.fetchall()
         # print(rows)
         connection.close()
         return df,dev
     except Exception as e:
+        print("Exception",e)
         return pd.DataFrame({}),pd.DataFrame({})
 
 def pull_data():
@@ -86,6 +106,28 @@ def pull_data():
     connection.close()
     #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
     return df
+def pull_ptodata(projectid):
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    df=pd.read_sql("select * from PTO where projectId="+projectid,connection)
+    connection.close()
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return df
+
+def pull_totaldata():
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    tickethistoryquery=query
+    df=pd.read_sql(tickethistoryquery,connection)
+    df1=pd.read_sql(backlogquery,connection)
+    df2=pd.concat([df,df1])
+    connection.close()
+    #df=pd.DataFrame({'Title':['Coverage Match','TransACT page RSOD'],'Id':[1,2]})
+    return df2
 
 def pull_settings(project_Id):
     df=pd.DataFrame({})
@@ -321,7 +363,7 @@ def update_developer(Id,developer):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    updatequery="Update RecommendationsData set  Recommended='"+str(developer)+"' where ID="+str(Id)
+    updatequery="Update RecommendationsData set AssignedTo='"+str(developer)+"' where ID="+str(Id)
     # print(query)
     cursor=connection.cursor()
     cursor.execute(updatequery)
@@ -333,12 +375,22 @@ def update_developer(Id,developer):
     #     raise Exception("Update failed")
     cursor.close()
     return "Updated Successfully!"
-def get_current_developers():
+def get_current_developers(profile=1):
     if(production):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    df=pd.read_sql(currentdevelopers,connection)
+    df=pd.read_sql(currentdevelopers+"where P.ID="+str(profile),connection)
+    # print(df)
+    connection.close()
+    return df['Name'].values
+
+def get_current_tester():
+    if(production):
+        connection=pyodbc.connect(connection_string)
+    else:
+        connection=pyodbc.connect(connection_string_local)
+    df=pd.read_sql(currenttesters,connection)
     # print(df)
     connection.close()
     return df['Name'].values
@@ -346,12 +398,15 @@ def get_current_developers():
 def format_response(final_df,type='recommended'):
     if(type=='recommended'):
         final_df['Developers']=final_df[['Developer1','Developer2','Developer3','Recommended']].apply(test,axis=1)
+        final_df['Testers']=final_df[['Tester1','Tester2','Tester3','RecommendedTester']].apply(test,axis=1)
         
     else:
         final_df['Developers']=final_df[['Developer1','Developer2','Developer3']].apply(test,axis=1)
+        final_df['Testers']=final_df[['Tester1','Tester2','Tester3']].apply(test,axis=1)
     #final_df['Developers']=list(final_df['Recommended'],final_df['Developer1'],final_df['Developer2'],final_df['Developer3'])
     final_df['Recommended']=final_df[['Recommended']].apply(test,axis=1)
-    res=final_df[['Title','Developers','ID','Recommended','Estimate']].apply(test,axis=1)
+    final_df['RecommendedTester']=final_df[['RecommendedTester']].apply(test,axis=1)
+    res=final_df[['Title','Developers','ID','Recommended','Estimate','Testers','RecommendedTester','AssignedTo']].apply(test,axis=1)
     #res=final_df
     return res
 
@@ -373,27 +428,30 @@ def paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc):
     else:
         connection=pyodbc.connect(connection_string_local)
     if(bydesc==False):
-        searchby='Recommended'
+        searchby='AssignedTo'
     else:
         searchby='Title'
-    pagequery="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended,Estimate as Estimate from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows  WHERE ([index] >="+str(startpage)+" AND [index]<= "+str(startpage+pagesize-1)+") ORDER BY "+sortCol+" "+sortDir+";"
-    searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended,Estimate as Estimate from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
+    pagequery="SELECT * FROM  (SELECT [index],ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended,Estimate as Estimate,isnull(Tester1,'''') as Tester1,isnull(Tester2,'''') as Tester2,isnull(Tester3,'''') as Tester3,isnull(RecommendedTester,'''') as RecommendedTester,AssignedTo from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows  WHERE ([index] >="+str(startpage)+" AND [index]<= "+str(startpage+pagesize-1)+") ORDER BY "+sortCol+" "+sortDir+";"
+    searchquery="select * from (SELECT ROW_NUMBER() OVER (ORDER BY "+sortCol+" "+sortDir+") AS Row,ID, isnull(Title,'''') as Title, isnull(Developer1,'''') as Developer1,isnull(Developer2,'''') as Developer2,isnull(Developer3,'''') as Developer3,isnull(Recommended,'''') as Recommended,Estimate as Estimate,isnull(Tester1,'''') as Tester1,isnull(Tester2,'''') as Tester2,isnull(Tester3,'''') as Tester3,isnull(RecommendedTester,'''') as RecommendedTester,AssignedTo from RecommendationsData where "+ searchby +" like '%"+search+"%') As TicketRows WHERE (Row >"+str(startpage)+" AND Row<= "+str(startpage+pagesize )+") ORDER BY "+sortCol+" "+sortDir+";"
+    #,EstimateTest as EstimateTest,Estimate+EstimateTest as TotalEstimate
     pagequery=searchquery if search!='%' else pagequery
     df=pd.read_sql(pagequery,connection)
     count_query="Select count(*) from RecommendationsData where "+ searchby +" like '%"+search+"%'"
     print(pagequery)
     count=pd.read_sql(count_query,connection)
     df1=df.copy()
+    print(df.head())
     formated_df=format_response(df,type='recommended')
     #print(formated_df.head())
     return formated_df,count,df1
 
-def get_current_developer_bystream(stream,project_Id):
+def get_current_developer_bystream(stream,project_Id,profile=1):
     if(production):
         connection=pyodbc.connect(connection_string)
     else:
         connection=pyodbc.connect(connection_string_local)
-    streamquery="select * from tbl_Employee E inner join tbl_DCTEmployee DE on E.EmpID=DE.EmpID where E.Stream like '%"+str(stream)+"%' and E.ProjectID="+str(project_Id)
+    streamquery="select * from tbl_Employee E inner join tbl_DCTEmployee DE on E.EmpID=DE.EmpID where E.Stream like '%"+str(stream)+"%' and E.ProjectID="+str(project_Id)+" and E.Profile="+str(profile)
+    print("stream query get current developer",streamquery)
     df=pd.read_sql(streamquery,connection)
     print(list(df['EmpName'].values))
     return list(df['EmpName'].values)

@@ -10,7 +10,7 @@ from flask_cors import CORS
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from model import run_model,devevaluation,estevaluation,devevaluationagr,estevaluationagr
+from model import run_model,devevaluation,estevaluation,devevaluationagr,estevaluationagr,testevaluationagr
 from utils.utilfunctions import seggregation,formatseveritylist,missing_values_treatment
 import json
 from fuzzywuzzy import fuzz
@@ -220,6 +220,7 @@ def predict():
     sortDir=request.args.get('sort_dir',default='asc',type=str)
     search=request.args.get('search',default='%',type=str)
     bydesc=request.args.get('bydesc',default='true',type=str)
+    role=request.args.get('role',default='dev',type=str)
     if(bydesc=='false'):
         bydesc=False
     else:
@@ -230,8 +231,8 @@ def predict():
     #print("pagesize:",pagesize,"startpage:",startpage,"sortcol:",sortCol,"sortDir",sortDir,"search:",search)
     res,ticketscount,df=paginated_tickets(pagesize,sortCol,sortDir,search,startpage,bydesc)
     global ticketMail
-    ticketMail=df[['ID','Title','Recommended','Developer1','Developer2','Developer3','Estimate']]
-    ticketMail.columns=['ID','Ticket Description','Assigned','Developer1','Developer2','Developer3','Estimate']
+    ticketMail=df[['ID','Title','Recommended','Developer1','Developer2','Developer3','Estimate','Tester1','Tester2','Tester3','RecommendedTester']]
+    ticketMail.columns=['ID','Ticket Description','Assigned','Developer1','Developer2','Developer3','Estimate','Tester1','Tester2','Tester3','RecommendedTester']
     #print(res)
     # if sortDir=='asc':
     #     sortDir=True
@@ -354,7 +355,8 @@ def similardefects():
         print('no results')
         return {'results':[{'id':list(),'title':list(),'similarityscore':list()}],'pageSize':0}
     startpage=int(pagesize)*(start-1)
-    dataframe=pull_data()
+    #dataframe=pull_data()
+    dataframe=pull_totaldata()
     dataframe['similarityscore']=dataframe['Title'].apply(lambda x:fuzz.token_sort_ratio(x,search))
     print(dataframe.head(20))
     dataframe.sort_values(by='similarityscore',ascending=False,inplace=True)
@@ -417,6 +419,7 @@ def evaluation1():
         #result2=estevaluation(dataframe)
         result1=devevaluationagr(dataframe,projectid)
         result2=estevaluationagr(dataframe,projectid)
+        result3=testevaluationagr(dataframe,projectid)
         print([result1,result2])
     except Exception as e:
         print(e)
@@ -426,7 +429,7 @@ def evaluation1():
 
 @app.route('/sendmail',methods=['POST','GET'])
 def sendmail():
-    fromEmail=request.args.get('from',default='',type=str)
+    fromEmail=request.args.get('from',default='dinu818690@gmail.com',type=str)
     toEmail=request.args.get('to',default='',type=str)
     subject=request.args.get('subject',default="tickets data",type=str)
     toname=request.args.get('name',default="Divakar",type=str)
@@ -538,6 +541,50 @@ def uploadFile():
         else:
             return {'results':'error'}                                       
     return {'results':'success'}
+
+@app.route("/UploadPTOFile", methods=["GET", "POST","PUT"])
+def uploadptoFile():
+    project=request.args.get('project',default='',type=str)
+    #file=request.args.get('File',default='',type=str)
+    #print(request)
+    if request.method == "POST" or request.method == "PUT":
+        if request.files:
+            file = request.files["File"]            
+            file.save(file.filename)
+            df=pd.DataFrame({})
+            try:
+                if('.xlsx' in file.filename or '.xls' in file.filename):
+                    df=pd.read_excel(file.filename,sheet_name="TimeSheet")
+                    #df_old=pull_ptodata(project)
+                    #df=pd.concat([df_old,df])
+                    #df['Project_Id']=project
+                    df.drop_duplicates(inplace=True)
+                    #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']
+                    os.remove(file.filename)
+                    #df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                    #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                    print("PTO",df.head())
+                    store_ptodata('PTO',df,'replace')
+                elif('.csv' in file.filename):
+                    print(file.filename)
+                    df=pd.read_csv(file.filename)
+                    df_old=pull_ptodata(project)
+                    df=pd.concat([df_old,df])
+                    #df['Project_Id']=project
+                    df.drop_duplicates(inplace=True)
+                    os.remove(file.filename)
+                    #df.columns=['ID','Title','State','Developer','Module','Severity','Tester','CreatedDate','RootCause','Project_Id']
+                    #df['CreatedDate']=pd.to_datetime(df['CreatedDate'],utc=False).dt.strftime("%Y-%m-%d")
+                    #df['CreatedDate']=pd.to_datetime(df['CreatedDate']).dt.date()
+                    store_ptodata('PTO',df,'replace')   
+            except Exception as e:
+                print(e)
+                return {'results':'failed to store in database because of '+str(e)}
+        else:
+            return {'results':'error'}                                       
+    return {'results':'success'}
+
+
 
 
 @app.route("/Estimate", methods=["GET", "POST","PUT"])

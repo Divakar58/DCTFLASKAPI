@@ -34,6 +34,7 @@ stream={'Billing':'1','Claims':'2','Policy':'3'}
 
 
 current_developers=get_current_developers()
+current_testers=get_current_developers(profile=2)
 #print("current developers",current_developers)
 Num_developer=3
 
@@ -52,12 +53,18 @@ def load_data(file):
 #     dataframe['Estimate'][dataframe['Estimate'].isna()]=None
 #     return dataframe
 
-def get_current_developer():
-    return current_developer
+# def get_current_developer():
+#     return current_developer
 
 def current_developer(dataframe,current_developers):
     
     return dataframe[dataframe['Developer'].isin(current_developers)]
+    #return dataframe.head(500)
+
+
+def current_tester(dataframe,current_testers):
+    
+    return dataframe[dataframe['Tester'].isin(current_testers)]
     #return dataframe.head(500)
 
 def devmodelling(dataframe):
@@ -103,6 +110,26 @@ def estmodelling(dataframe):
     print(dataframe[y.isna()])
     pipe.fit(X,y)
     return pipe
+def testmodelling(dataframe):
+    print("Tester modelling")
+    #X=dataframe['Title']+' '+dataframe['Application']+' '+dataframe['Seggregation']
+    X=dataframe['Title']#+' '+dataframe['Seggregation']
+    y=dataframe['Tester']
+    #X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0,random_state=42)
+    print(dataframe.head())
+    tcv=CountVectorizer(analyzer=text_process)
+    tfv=TfidfTransformer()
+    sm=SMOTE(k_neighbors=1,n_jobs=-1)#k_neighbors=3,
+    svc=SVC(kernel='rbf',probability=True)
+    #mb=MultinomialNB()
+    rfc=RandomForestClassifier()
+    xgc=XGBClassifier()
+    print("before pipe")
+    pipe=make_pipeline(tcv,tfv,sm,xgc)
+    #pipe=make_pipeline(tcv,tfv,mb)
+    #pipe.fit(X=X_train,y=y_train)
+    pipe.fit(X,y)
+    return pipe
 
 def devevaluationagr(dataframe,projectid):
     print("evaluation")
@@ -123,6 +150,41 @@ def devevaluationagr(dataframe,projectid):
         # dataframe=current_developer(dataframe,current_developers)
         X=dummydf['Title']+' '+dummydf['Seggregation']
         y=dummydf['Developer']
+        X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
+        tcv=CountVectorizer(analyzer=text_process)
+        tfv=TfidfTransformer()
+        sm=SMOTE(k_neighbors=1,n_jobs=-1)
+        svc=SVC(kernel='rbf',probability=True)
+        rfc=RandomForestClassifier()
+        #mb=MultinomialNB()
+        xgc=XGBClassifier()
+        pipe=make_pipeline(tcv,tfv,sm,xgc)
+        #pipe=make_pipeline(tcv,tfv,mb)
+        pipe.fit(X=X_train,y=y_train)
+        y_predict=pipe.predict(X_test)
+        print(classification_report(y_test,y_predict))
+        print("Accuracy",round(accuracy_score(y_test,y_predict)*100,2))
+        accuracy=accuracy+round(accuracy_score(y_test,y_predict)*100,2)
+    return round(accuracy/len(stream),2)
+
+def testevaluationagr(dataframe,projectid):
+    print("test evaluation")
+    try:
+        dataframe=missing_values_treatment(dataframe)
+        dataframe[['Seggregation','Application']]=pd.DataFrame(dataframe[['Title','Module']].apply(seggregation,axis=1))
+        dataframe['Complexity']=pd.DataFrame(dataframe[['Severity','Estimate']].apply(Estimation,axis=1))
+        dummydf=dataframe.copy()
+    except Exception as e:
+        print(e)
+        raise Exception 
+        return {"message":"error"}
+    accuracy=0
+    for i in stream.items():
+        streamdeveloper=get_current_developer_bystream(i[1],projectid,profile=2)
+        dummydf=current_tester(dataframe,streamdeveloper)
+        print(dataframe.head())
+        X=dummydf['Title']+' '+dummydf['Seggregation']
+        y=dummydf['Tester']
         X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=42)
         tcv=CountVectorizer(analyzer=text_process)
         tfv=TfidfTransformer()
@@ -258,14 +320,20 @@ def run_model(dataframe,projectid=1):
         return {"message":e} 
     for i in stream.items():
         streamdeveloper=get_current_developer_bystream(i[1],projectid)
+        streamtester=get_current_developer_bystream(i[1],projectid,profile=2)
+        print("Test stream")
+        print(streamtester)
         print(i[0]," developers")
         print(streamdeveloper)
         current_dataframe=current_developer(dataframe,streamdeveloper)
         devmodel=devmodelling(current_dataframe)
         estmodel=estmodelling(current_dataframe)
+        current_test_dataframe=current_tester(dataframe,streamtester)
+        testmodel=testmodelling(current_test_dataframe)
         print("Model Generated as pickle file")
         pickle.dump(devmodel,open('devmodel'+str(i[0])+"_"+str(projectid)+'.pkl', 'wb'))
         pickle.dump(estmodel,open('estmodel'+str(i[0])+"_"+str(projectid)+'.pkl', 'wb'))
+        pickle.dump(testmodel,open('testmodel'+str(i[0])+"_"+str(projectid)+'.pkl', 'wb'))
     #return model
     return {"message": "Model ran successfull"},200
 

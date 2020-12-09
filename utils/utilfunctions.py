@@ -152,4 +152,5 @@ def missing_values_treatment(dataframe):
     dataframe['Developer'][dataframe['Developer'].isna()]='No Developer'
     dataframe['Severity'][dataframe['Severity'].isna()]='Medium'
     dataframe['Estimate'][dataframe['Estimate'].isna()]=None
+    dataframe['Tester'][dataframe['Tester'].isna()]='No Tester'
     return dataframe
