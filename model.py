@@ -14,19 +14,19 @@ from nltk.stem import wordnet, WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer,TfidfTransformer
 #from sklearn.ensemble import RandomForestClassifier
 #from sklearn.pipeline import Pipeline
-from imblearn.pipeline import make_pipeline
-from imblearn.over_sampling import SMOTE
+#from imblearn.pipeline import make_pipeline
+#from imblearn.over_sampling import SMOTE
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 #from sklearn.metrics import classification_report
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
-import xgboost
+#import xgboost
 import re
 import pickle
 #from prediction import modelling
-import xgboost as xgb
-from xgboost import XGBClassifier
+#import xgboost as xgb
+#from xgboost import XGBClassifier
 from get_data import dataframe,get_current_developers,get_current_developer_bystream
 from sklearn.metrics import classification_report,accuracy_score
 from utils.utilfunctions import seggregation,Estimation,missing_values_treatment

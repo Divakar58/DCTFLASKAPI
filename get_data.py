@@ -275,11 +275,15 @@ def pull_data_bydate(startDate,endDate):
     #print(querydate)
     # print("startDate=",startDate,"endDate=",endDate)
     if(startDate!=''):
+        startDate=startDate.split('T')[0]
         if(endDate!=''):
-            querydate=querydate+" and [CreatedDate]> '"+ startDate+ "' and [CreatedDate]<'"+endDate+"'"
+            endDate=endDate.split('T')[0]
+            #querydate=querydate+" and [CreatedDate]> '"+ startDate+ "' and [CreatedDate]<'"+endDate+"'"
+            querydate = "{0} and [CreatedDate]>= '{1}' and [CreatedDate]<= '{2}'".format(querydate,startDate,endDate)
             print(querydate)
         else:
-            querydate=querydate+" and [CreatedDate]> '"+ startDate +"'"
+            querydate=querydate+" and [CreatedDate]>= '"+ startDate +"'"
+            querydate = "{0} and [CreatedDate]>= '{1}' ".format(querydate,startDate)
             print(querydate)
     else:
         querydate=querydate
@@ -315,11 +319,13 @@ def pull_backlg_data_bydate(startDate,endDate):
     #print(querydate)
     # print("startDate=",startDate,"endDate=",endDate)
     if(startDate!=''):
+        startDate=startDate.split('T')[0]
         if(endDate!=''):
-            querydate=querydate+" and [CreatedDate]> '"+ startDate+ "' and [CreatedDate]<'"+endDate+"'"
+            endDate=endDate.split('T')[0]
+            querydate=querydate+" and [CreatedDate]>= '"+ startDate+ "' and [CreatedDate]<='"+endDate+"'"
             print(querydate)
         else:
-            querydate=querydate+" and [CreatedDate]> '"+ startDate +"'"
+            querydate=querydate+" and [CreatedDate]>= '"+ startDate +"'"
             print(querydate)
     else:
         querydate=querydate
@@ -376,6 +382,7 @@ def update_developer(Id,developer):
     cursor.close()
     return "Updated Successfully!"
 def get_current_developers(profile=1):
+    return ['Dev1','Dev2','Dev3','Dev4','Dev5']
     if(production):
         connection=pyodbc.connect(connection_string)
     else:

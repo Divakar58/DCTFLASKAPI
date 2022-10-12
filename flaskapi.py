@@ -1,23 +1,23 @@
 from flask import Flask,request,jsonify,Response
 #from flask_restful import Resource,Api
-from prediction import prediction,test,tested,estimation
+#from prediction import prediction,test,tested,estimation
 import pandas as pd
 import pyodbc
 import pandas.io.sql as psql
 from model import current_developers
-from get_data import *#latest_defect,get_ticket_byId,paginated_tickets,update_developer,pull_data_bydate,pull_data,store_data,getticket_databyId,pull_data_byprojectId,pull_backlg_data_bydate,pull_settings,insert_settings,update_settings
+from get_data import *
 from flask_cors import CORS
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from model import run_model,devevaluation,estevaluation,devevaluationagr,estevaluationagr,testevaluationagr
+# from model import run_model,devevaluation,estevaluation,devevaluationagr,estevaluationagr,testevaluationagr
 from utils.utilfunctions import seggregation,formatseveritylist,missing_values_treatment
-import json
+# import json
 from fuzzywuzzy import fuzz
-from datetime import datetime
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
-from sendgrid.helpers.mail import *
+# from datetime import datetime
+# from sendgrid import SendGridAPIClient
+# from sendgrid.helpers.mail import Mail
+# from sendgrid.helpers.mail import *
 import json
 
 
@@ -55,7 +55,7 @@ FILE_FOLDER_PATH=os.environ.get("FILE_UPLOAD")
 
 PORT = int(os.environ.get("PORT"))
 
-SIMILARITY_PERCENT=float(int(os.environ.get('SIMILARITY_PERCENT')))
+SIMILARITY_PERCENT=float(int(os.environ.get('SIMILARITY_PERCENT') or 50))
 
 # connection_string=os.environ.get("CONNECTION_STRING")
 # connection_string_local=os.environ.get("CONNECTION_STRING_LOCAL")
@@ -64,9 +64,29 @@ query="select top 3 * from [dbo].[tbl_Employee]"
 
 
 ###########################  ----- Home ----#####################
-@app.route('/',methods=['POST','GET'])
+@app.route('/',methods=['GET'])
 def home():
     return {"message":"sucesss"},200
+
+class Data():
+    def __init__(self,id,fullname,email,token,userType):
+        self.id = id
+        self.fullName = fullname
+        self.email = email
+        self.token =token
+        self.userType = userType
+
+@app.route('/login',methods=['POST','GET'])
+def login():
+    request_body = request.get_json()
+    if request.method=='POST':
+        if((request_body['UserName']=="test") and (request_body['Password']=="test")):
+            print("login")
+            d = Data(1,"test","test@gmail.com","test","A")
+            return {"results":{"id":1,"fullName":"test","email":"test@gmail.com","token":"test","userType":"A"}},200
+        else:
+            return "Failed",401
+
 
 ###########################  ----- data ----#####################
 @app.route('/data',methods=['POST','GET'])
@@ -339,6 +359,51 @@ def recommendedDeveloper():
         #result=prediction(ticket)
         #print(result)
         return json.dumps({"results":list(result)}),200
+
+@app.route('/similardefect',methods=['POST','GET'])
+def similardefect():
+    #pagesize=request.args.get('pagesize',default=5,type=int)
+    #start=request.args.get('page',default=1,type=int)
+    #sortCol=request.args.get('sort_col',default='similarityscore',type=str)
+    similarscore=int(request.args.get('similarscore',default=50,type=int))
+    # if(sortCol=='Id'):
+    #     sortCol='ID'
+    #sortDir=request.args.get('sort_dir',default='asc',type=str)
+    search=request.args.get('search',default='',type=str)
+    print(search)
+    if(search==''):
+        print('no results')
+        return {'results':[{'id':list(),'title':list(),'similarityscore':list()}],'pageSize':0}
+    #startpage=int(pagesize)*(start-1)
+    #dataframe=pull_data()
+    dataframe=pull_totaldata()
+    print(dataframe)
+    dataframe['similarityscore']=dataframe['Title'].apply(lambda x:fuzz.token_sort_ratio(x,search))
+    
+    dataframe.sort_values(by='similarityscore',ascending=False,inplace=True)
+    #print(SIMILARITY_PERCENT)
+    data=dataframe[dataframe['similarityscore']>=similarscore].copy()
+    count=len(data.index)
+    #print("print dataframe")
+    #data=data.iloc[:,[0,1,8]]
+    #data=data.iloc[startpage:startpage+pagesize]
+    #if(sortDir=='asc'):
+    #    data.sort_values(by=sortCol,inplace=True)
+    #else:
+    #    data.sort_values(by=sortCol,ascending=False,inplace=True)   
+    #print(data)
+    print(count,"Count")
+    results=[]
+    for i,j,k in zip(data['ID'],data['Title'],data['similarityscore']):
+        dis={}
+        dis['id']=i
+        dis['title']=j
+        dis['similarityscore']=k
+        results.append(dis)
+    #print(data)
+    return {'results':results,'pageSize':count}
+    #return {'results':{'id':list(map(str,data['ID'].values)),'title':list(data['Title'].values),'similarityscore':list(map(str,data['similarityscore'].values)),'pageSize':count}}
+
 
 @app.route('/similardefects',methods=['POST','GET'])
 def similardefects():

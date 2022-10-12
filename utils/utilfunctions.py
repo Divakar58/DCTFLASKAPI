@@ -10,7 +10,7 @@ def formatseveritylist(a):
 def seggregation(a):
     x,y=a
     if(y is not None and x is not None):
-        if 'policy' in y.lower() or 'stp' in x.lower() or ('policy' in x.lower() and 'claim' not in x.lower()) :
+        if 'policy' in y.lower() or ('policy' in x.lower() and 'claim' not in x.lower()) :
             if 'transact' in x.lower():
                 return pd.Series(['TransACT','Policy'],index=['Seggregation','Application'])
             elif 'applicant' in x.lower():
@@ -31,10 +31,12 @@ def seggregation(a):
                 return pd.Series(['RateTable','Policy'],index=['Seggregation','Application'])
             elif 'shred' in x.lower() and 'policy' in y.lower():
                 return pd.Series(['Shred','Policy'],index=['Seggregation','Application'])
-            elif 'party' in y.lower() or 'ofac' in x.lower() or 'geo' in x.lower() or 'pitney' in x.lower():
-                return pd.Series(['Integrations','Party'],index=['Seggregation','Application'])
-            elif 'stp' in y.lower() or 'stp' in x.lower():
-                return pd.Series(['STP','Policy'],index=['Seggregation','Application'])
+            elif 'policy' in y.lower() or 'usdot' in x.lower() or 'probil' in x.lower() or 'mvr' in x.lower():
+                return pd.Series(['Integrations','Policy'],index=['Seggregation','Application'])
+            elif 'policy' in y.lower() or ('key' in x.lower() and 'missing' in x.lower()):
+                return pd.Series(['Table','Policy'],index=['Seggregation','Application'])
+            elif 'policy' in y.lower() or ('object' in x.lower() and 'reference' in x.lower()):
+                return pd.Series(['CBO','Policy'],index=['Seggregation','Application'])
             else:
                 return pd.Series(['PolicyOther','Policy'],index=['Seggregation','Application'])
         elif 'billing' in y.lower() or 'billing' in x.lower():
